@@ -3,8 +3,43 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import axios from 'axios'
+import md5 from 'js-md5';
+import url from '@/serviceAPI.config.js'
+import ShadowBox from './component/ShadowBox.vue'
+import PageHeader from './component/PageHeader.vue'
+import {Button, Field, Cell, CellGroup, Popup, Picker, RadioGroup, Radio} from 'vant'
+
+// 获取url里的参数值
+import geturlpara from './geturlpara.js'
+
+Vue.component('shadow-box',ShadowBox)
+Vue.component('page-header',PageHeader)
+
+Vue.use(Button).use(Field).use(Cell).use(CellGroup).use(Popup).use(Picker).use(RadioGroup).use(Radio)
 
 Vue.config.productionTip = false
+//把 `******` 加到 `Vue` 的原型中
+Vue.prototype.axios = axios;
+Vue.prototype.$md5 = md5;
+Vue.prototype.$geturlpara = geturlpara 
+
+router.beforeEach((to,from,next)=>{
+  // 为页面添加标题
+  if (to.meta.title) {
+    document.title = to.meta.title
+  }
+  
+  // 验证所有的页面，是否登录
+  // if(to.matched.some(m => m.meta.auth)){
+  //   let isGetOpenid = localStorage.getItem('openid');
+  //   if(!isGetOpenid){
+  //     next('/author')
+  //   }
+  // }
+  next()
+})
+
 
 /* eslint-disable no-new */
 new Vue({
