@@ -4,18 +4,18 @@
       :headerImg="headerImg"
       descriptionTitle="个人中心"
     ></page-header>
-    <div class="cars-box" v-for="item in carsInfo" :key="item.index">
+    <div class="cars-box" v-for="(item, index) in carsInfo" :key="item.index">
       <shadow-box>
         <div class="top">
           <li class="car"><img src="./../assets/img/car-green.png" alt=""></li>
-          <li :class="['carnum', item.carNum.length == 7 ? 'carNumBgBlue' : 'carNumBgBlueGreen']">
-            <div>{{item.carNum}}</div>
+          <li :class="['carnum', item.plate_number.length == 7 ? 'carNumBgBlue' : 'carNumBgBlueGreen']">
+            <div>{{item.plate_number}}</div>
           </li>
           <li
-            v-if="item.carNum.length == 7"
+            v-if="item.plate_number.length == 7"
             class="parking-number"
           >
-            <div>{{item.parkingNum}}</div>
+            <div>{{item.parking}}</div>
           </li>
           <van-button
             v-else
@@ -27,23 +27,23 @@
         <div class="bottom">
           <li>
             <span>车身颜色:</span>
-            <p>{{item.carColor}}</p>
+            <p>{{item.carColor ? item.carColor : '--'}}</p>
           </li>
           <li>
             <span>车型信息:</span>
-            <p>{{item.carBrand}}</p>
+            <p>{{item.carBrand?item.carBrand:'--'}}</p>
           </li>
         </div>
         <div class="bottom">
           <li>
             <span>洗车次数:</span>
-            <p>{{item.carTimes}}</p>
+            <p>{{item.carTimes?item.carTimes:0}}</p>
           </li>
           <li>
             <span>服务到期时间:</span>
-            <p>{{item.endTime}}</p>
+            <p>{{item.last_clear_time}}</p>
           </li>
-          <van-button type="info" size="small" @click="renewalFee">续费</van-button>
+          <van-button type="info" size="small" @click="renewalFee(index)">续费</van-button>
         </div>
       </shadow-box>
     </div>
@@ -53,54 +53,121 @@
       size="large"
       @click="addCarInfo"
     >添加车辆</van-button>
+
+    <!-- 停车签到弹出输入框 -->
+    <van-dialog
+      v-model="show"
+      title="请输入您的车所在位置"
+      show-cancel-button
+      @confirm="onConfirm"
+      @cancel="onCancel"
+    >
+      <textarea
+        name="textarea"
+        id="textarea"
+        cols="30"
+        rows="3"
+        v-model="carAddressDr"
+      ></textarea>
+    </van-dialog>
   </div>
 </template>
 
 <script>
+import url from '@/serviceAPI.config.js'
+import mdFive from '@/md5.js'
+import {Toast} from 'vant'
 export default {
   name: 'HelloWorld',
   data () {
     return {
       headerImg:require('./../assets/img/car-red.png'),
-      carNum: '',         //车牌号
-      parkingNum:'',      //车位号
+      plate_number: '',         //车牌号
+      parking:'',      //车位号
       carBrand:'',        //车型信息：
       carColor:'',        //车身颜色：
       carTimes:'',        //洗车次数：
-      endTime:'',         //服务到期时间
-      carsInfo:[
-        {
-          carNum: '沪A12345',
-          parkingNum:'A12', 
-          carBrand:'本田', 
-          carColor:'绿色', 
-          carTimes:'20', 
-          endTime:'2019.6.6', 
-        },
-        {
-          carNum: '沪A123456',
-          parkingNum:'A12', 
-          carBrand:'奔驰', 
-          carColor:'绿色', 
-          carTimes:'2', 
-          endTime:'2019.6.6', 
-        },
-      ]
+      last_clear_time:'',         //服务到期时间
+      carsInfo:[],
+      access_token : this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key),
+      carAddressDr:'',    //如果没有车位号，填写的车辆所在位置
+      show:false,
+    }
+  },
+  created(){
+    let isError = this.$route.query.status
+    // 如果请求返回 ERROR ，则主动请求授权
+    if(isError == 'ERROR'){
+      this.axios.post(url.getOauthRedirect,{
+        access_token:this.access_token,
+        redirect_uri:`http://www.ichevip.com/view/`,
+        scope:'snsapi_userinfo'
+      }).then(res => {
+        console.log(res)
+        if(res.data.code == 0){
+          window.location.href = res.data.data.oauth_url
+        }
+      }).catch(err => {
+        console.log(err)
+      })
+    }else if(isError == 'SUCCESS'){
+    // 静默授权模式
+      this.axios.post(url.getOauthRedirect,{
+        access_token:this.access_token,
+        redirect_uri:`http://www.ichevip.com/view/`,
+        scope:'snsapi_base'
+      }).then(res => {
+        console.log(res)
+        if(res.data.code == 0){
+          window.location.href = res.data.data.oauth_url
+        }
+      }).catch(err => {
+        console.log(err)
+      })
     }
   },
   mounted(){
-    // console.log('沪A123456'.length)
+    if(!openid){
+      localStorage.setItem('openid',this.$route.query.openid)
+    }
+    let openid = localStorage.getItem('openid')
+    console.log(openid)
+
+    // 获取车辆列表
+    this.axios.post(url.getCarList,{
+      access_token:this.access_token
+    }).then(res => {
+      this.carsInfo = res.data.data;
+      console.log(res)
+    }).catch(err => {
+      console.log(err)
+    })
   },
   methods: {
     addCarInfo() {
       this.$router.push('/addCarInfo')
     },
     // 续费
-    renewalFee(){
-
+    renewalFee(index){
+      this.$router.push({
+        path:'/pay',
+        query:{
+          id:this.carsInfo[index].id
+        }
+      })
     },
     // 停车签到
-    checkIn(){},
+    checkIn(){
+      this.show = true;
+    },
+    onConfirm(){
+      this.show = false
+      console.log(this.carAddressDr)
+    },
+    onCancel(){
+      this.show = false;
+      this.carAddressDr = ''
+    },
   },
 }
 </script>
@@ -222,6 +289,15 @@ export default {
     margin: 0 auto 2rem;
     display: block;
     line-height: 0;
+  }
+  textarea{
+    width: 21.667rem;
+    height: 6.667rem;
+    border: 1px solid rgba(50,119,216,1);
+    display: block;
+    margin: 10px auto;
+    padding: .3rem;
+    box-sizing: border-box;
   }
 }
 </style>

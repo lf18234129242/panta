@@ -9,6 +9,8 @@ function loadView(view) {
 }
 
 export default new Router({
+  mode: 'history',
+  base: 'view',
   routes: [
     {
       path: '/',

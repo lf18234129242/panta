@@ -8,7 +8,8 @@
             <div
                 v-for="(item,index) in packageList" 
                 :key="index"
-                :class="['package', radio == index ? 'borderBlue' : 'borderEEE']"
+                :class="['package', radio == index ? 'borderBlue' : 'borderEEE']" 
+                v-if="item.did" 
                 @click="radio = index"
             >
                 <div class="top">
@@ -38,6 +39,9 @@
 </template>
 
 <script>
+import url from '@/serviceAPI.config.js'
+import mdFive from '@/md5.js'
+import {Toast} from 'vant'
     export default {
         data() {
             return {
@@ -48,13 +52,16 @@
                         cardType:'体验卡',
                         cardTypeDetail:'免费洗三天',
                         cardTypeTime:'新用户专享',
+                        did:true
                     },
                     {
                         cardType:'月卡',
                         cardTypeDetail:'99元洗车30天',
                         cardTypeTime:'到期时间为2018年5月1日',
+                        did:true
                     },
                 ],
+                access_token : this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key),
             }
         },
         methods: {
