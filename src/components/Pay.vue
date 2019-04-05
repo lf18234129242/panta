@@ -75,7 +75,7 @@ import {Toast} from 'vant'
             }).then(res => {
                 console.log(res)
                 if(res.data.code == 0){
-                    this.packageList = res.data.data
+                    this.packageList = res.data.data;
                 }
             }).catch(err => {
                 console.log(err)
