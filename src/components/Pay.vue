@@ -9,23 +9,25 @@
                 v-for="(item,index) in packageList" 
                 :key="index"
                 :class="['package', radio == index ? 'borderBlue' : 'borderEEE']" 
-                v-if="item.did" 
                 @click="radio = index"
             >
                 <div class="top">
                     <li class="img">
-                        <img src="./../assets/img/car-green.png" alt="">
+                        <img src="./../assets/img/car-green.jpg" alt="">
                     </li>
                     <li class="center">
-                        <span>{{item.cardType}}</span>
-                        <p>{{item.cardTypeDetail}}</p>
+                        <span>{{item.package_name}}</span>
+                        <p>{{item.package_title}}</p>
                     </li>
                     <li class="radio">
                         <van-radio :name="index"></van-radio>
                     </li>
                 </div>
-                <div class="bottom">
-                    {{item.cardTypeTime}}
+                <div class="bottom" v-if="item.package_explain">
+                    {{item.package_explain}}
+                </div>
+                <div class="bottom" v-else>
+                    到期时间:{{item.over_time}}
                 </div>
             </div>
         </van-radio-group>
@@ -45,24 +47,39 @@ import {Toast} from 'vant'
     export default {
         data() {
             return {
-                headerImg: require('./../assets/img/car-green.png'),
+                headerImg: require('./../assets/img/car-green.jpg'),
                 radio: 0,
                 packageList:[
                     {
-                        cardType:'体验卡',
-                        cardTypeDetail:'免费洗三天',
-                        cardTypeTime:'新用户专享',
-                        did:true
+                        package_name:'体验卡',
+                        package_title:'免费洗三天',
+                        over_time:'新用户专享',
+                        did:true,
+                        car_id:'',
                     },
                     {
-                        cardType:'月卡',
-                        cardTypeDetail:'99元洗车30天',
-                        cardTypeTime:'到期时间为2018年5月1日',
+                        package_name:'月卡',
+                        package_title:'99元洗车30天',
+                        over_time:'到期时间为2018年5月1日',
                         did:true
                     },
                 ],
                 access_token : this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key),
             }
+        },
+        mounted(){
+            this.car_id = this.$route.query.car_id;
+            this.axios.post(url.getOrderPackageList,{
+                access_token:this.access_token,
+                car_id:this.car_id
+            }).then(res => {
+                console.log(res)
+                if(res.data.code == 0){
+                    this.packageList = res.data.data
+                }
+            }).catch(err => {
+                console.log(err)
+            })
         },
         methods: {
             wechatPay(){

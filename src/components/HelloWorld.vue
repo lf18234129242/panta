@@ -7,7 +7,7 @@
     <div class="cars-box" v-for="(item, index) in carsInfo" :key="item.index">
       <shadow-box>
         <div class="top">
-          <li class="car"><img src="./../assets/img/car-green.png" alt=""></li>
+          <li class="car"><img src="./../assets/img/car-green.jpg" alt=""></li>
           <li :class="['carnum', item.plate_number.length == 7 ? 'carNumBgBlue' : 'carNumBgBlueGreen']">
             <div>{{item.plate_number}}</div>
           </li>
@@ -81,7 +81,7 @@ export default {
   name: 'HelloWorld',
   data () {
     return {
-      headerImg:require('./../assets/img/car-red.png'),
+      headerImg:require('./../assets/img/car-red.jpg'),
       plate_number: '',         //车牌号
       parking:'',      //车位号
       carBrand:'',        //车型信息：
@@ -95,23 +95,89 @@ export default {
     }
   },
   created(){
-    let isError = this.$route.query.status
-    // 如果请求返回 ERROR ，则主动请求授权
-    if(isError == 'ERROR'){
-      this.axios.post(url.getOauthRedirect,{
-        access_token:this.access_token,
-        redirect_uri:`http://www.ichevip.com/view/`,
-        scope:'snsapi_userinfo'
-      }).then(res => {
+    let openid = localStorage.getItem('openid')
+    console.log(openid)
+
+    if(openid && openid !== 'undefined'){
+      //如果有 openid ，获取用户 姓名，手机号
+      this.getClientInfo()
+    }else{
+      localStorage.setItem('openid',this.$route.query.openid)
+      let openid = localStorage.getItem('openid')
+      if(openid && openid !== 'undefined'){
+        //如果有 openid ，获取用户 姓名，手机号
+        this.getClientInfo()
+      }else{
+        // 授权第一步
+        this.getSelfInfo()
+      }
+    } 
+  },
+  mounted(){
+    // 获取车辆列表
+    this.axios.post(url.getCarList,{
+      access_token:this.access_token
+    }).then(res => {
+      console.log(res)
+      if(res.data.code == 0){
+        this.carsInfo = res.data.data;
+      }
+    }).catch(err => {
+      console.log(err)
+    })
+  },
+  methods: {
+    //获取用户 姓名、手机号
+    getClientInfo(){
+      let openid = localStorage.getItem('openid')
+      if(!localStorage.getItem('username')){
+        this.axios.post(url.getClientInfo,{
+          access_token:this.access_token,
+          openid:openid
+        }).then(res => {
+          console.log(res)
+          localStorage.setItem('id',res.data.data.id)
+          localStorage.setItem('wx_headimgurl',res.data.data.wx_headimgurl)
+          localStorage.setItem('username',res.data.data.username)
+        }).catch(err => {
+          console.log(err)
+        })
+      }
+    },
+    //  getSelfInfo   授权第一步
+    getSelfInfo(){
+      this.axios.post(url.getSelfInfo,{
+        access_token:this.access_token
+      }).then(res=> {
         console.log(res)
-        if(res.data.code == 0){
-          window.location.href = res.data.data.oauth_url
+        // 如果用户未登录   跳转到后台返回的链接
+        if(res.data.code == 1020009){
+          let isError = this.$route.query.status
+          // 如果 url 里面没有 isError 参数，就跳转请求连接
+          if(isError==undefined || !isError){
+            window.location.href = res.data.data.oauth_url;
+          // 如果请求返回 ERROR ，则主动请求授权
+          }else if(isError == 'ERROR'){
+            // 非静默授权模式
+            this.snsapi_userinfo()
+          }else if(isError == 'SUCCESS'){
+            // 静默授权模式
+            this.snsapi_base()
+          }
+          return false;
+        // 静默授权，获取微信名 头像 openid id
+        }else if(res.data.code == 0){
+          localStorage.setItem('openid',res.data.data.openid)
+          localStorage.setItem('id',res.data.data.id)
+          localStorage.setItem('wx_headimgurl',res.data.data.wx_headimgurl)
+          localStorage.setItem('username',res.data.data.username)
         }
       }).catch(err => {
         console.log(err)
       })
-    }else if(isError == 'SUCCESS'){
+    },
     // 静默授权模式
+    snsapi_base(){
       this.axios.post(url.getOauthRedirect,{
         access_token:this.access_token,
         redirect_uri:`http://www.ichevip.com/view/`,
@@ -124,26 +190,22 @@ export default {
       }).catch(err => {
         console.log(err)
       })
-    }
-  },
-  mounted(){
-    if(!openid){
-      localStorage.setItem('openid',this.$route.query.openid)
-    }
-    let openid = localStorage.getItem('openid')
-    console.log(openid)
-
-    // 获取车辆列表
-    this.axios.post(url.getCarList,{
-      access_token:this.access_token
-    }).then(res => {
-      this.carsInfo = res.data.data;
-      console.log(res)
-    }).catch(err => {
-      console.log(err)
-    })
-  },
-  methods: {
+    },
+    // 非静默授权模式
+    snsapi_userinfo(){
+      this.axios.post(url.getOauthRedirect,{
+        access_token:this.access_token,
+        redirect_uri:`http://www.ichevip.com/view/`,
+        scope:'snsapi_userinfo'
+      }).then(res => {
+        console.log(res)
+        if(res.data.code == 0){
+          window.location.href = res.data.data.oauth_url
+        }
+      }).catch(err => {
+        console.log(err)
+      })
+    },
     addCarInfo() {
       this.$router.push('/addCarInfo')
     },
@@ -152,7 +214,7 @@ export default {
       this.$router.push({
         path:'/pay',
         query:{
-          id:this.carsInfo[index].id
+          car_id:this.carsInfo[index].cid
         }
       })
     },

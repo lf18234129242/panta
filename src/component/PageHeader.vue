@@ -19,7 +19,7 @@
 <style scoped lang="scss">
 .PageHeader{
     header{
-        padding-top: 5.867rem;
+        padding-top: 4rem;
         display: flex;
         justify-content: center;
         margin-bottom: 1.6rem;

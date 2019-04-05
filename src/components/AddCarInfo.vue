@@ -40,7 +40,7 @@
                 placeholder="请选择小区名称"
                 label="小区名称"
                 left-icon="hotel-o"
-                @click.stop="show=true"
+                @click.stop="checkVillage"
             />
             <!-- 弹出层 -->
             <van-popup v-model="show" position="bottom" :overlay="true">
@@ -56,7 +56,7 @@
         <van-button
             type="info"
             size="large"
-            @click="bindCarsNum"
+            @click="addCarInfo"
         >绑定车牌号码</van-button>
     </div>
 </template>
@@ -68,7 +68,7 @@ import {Toast} from 'vant'
     export default {
         data() {
             return {
-                headerImg:require('./../assets/img/car-red.png'),
+                headerImg:require('./../assets/img/car-red.jpg'),
                 car_owner: localStorage.getItem('username'),
                 plate_number: '',   //车牌号
                 plate_type:1,   //车牌种类，1-普通 2-新能源；默认 1
@@ -98,24 +98,37 @@ import {Toast} from 'vant'
         },
         methods: {
             // 绑定车牌号
-            bindCarsNum(){
-                this.axios.post(url.addCarInfo,{
-                    access_token:this.access_token,
-                    car_owner:this.car_owner,
-                    plate_number:this.plate_number,
-                    fixed:this.fixed,
-                    parking:this.parking,
-                    village_id:this.village_id,
-                    plate_type:this.plate_number.length < 8 ? 1 : 2
-                }).then(res => {
-                    if(res.data.code == 0){
-                        this.$router.push('/pay')
-                    }else{
-                        Toast(`绑定失败！`)
+            addCarInfo(){
+                if(this.plate_number.length < 7 && this.plate_number.length > 8){
+                    Toast(`请输入正确的车牌号码！`)
+                    return false;
+                }else if(this.fixed == 1){
+                    if(!this.parking){
+                        Toast(`如果您有固定车位，请输入车位号码`)
+                        return false;
                     }
-                }).catch(err => {
-                    Toast(`绑定失败，请重试！${err}`)
-                })
+                }else if(this.village_name == ''){
+                    Toast(`请输入所在的小区名称！`)
+                    return false;
+                }else{
+                    this.axios.post(url.addCarInfo,{
+                        access_token:this.access_token,
+                        car_owner:this.car_owner,
+                        plate_number:this.plate_number,
+                        fixed:this.fixed,
+                        parking:this.parking,
+                        village_id:this.village_id,
+                        plate_type:this.plate_number.length < 8 ? 1 : 2
+                    }).then(res => {
+                        if(res.data.code == 0){
+                            this.$router.push({path:'/pay',query:{car_id:res.data.car_id}})
+                        }else{
+                            Toast(`绑定失败，请核对信息再重试！`)
+                        }
+                    }).catch(err => {
+                        Toast(`绑定失败，请核对信息再重试！${err}`)
+                    })
+                }
             },
             changeDisabledToTrue() {
                 this.fixed = 1;
@@ -129,9 +142,13 @@ import {Toast} from 'vant'
                 this.parkingIsDisabled = true;
                 this.parkingPlaceholder = '无固定车位无需填写'
             },
+            // 选择小区
+            checkVillage(){
+                this.show = true;
+                document.activeElement.blur();
+            },
             // 弹框 确认
             onConfirm(value) {
-                console.log(value)
                 this.show = false;
                 this.village_name = value.text;
                 this.village_id = value.id;
