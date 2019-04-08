@@ -107,7 +107,7 @@ import wx from 'weixin-js-sdk'
                             id:this.order_id
                         }).then(response => {
                             console.log(response)
-                            let configJson = JSON.parse(response.data.configJson);
+                            let configJson = JSON.parse(response.data.data.configJson);
                             console.log(configJson)
                             wx.config({
                                 debug: configJson.debug, // 开启调试模式,调用的所有api的返回值会在客户端alert出来
@@ -121,7 +121,7 @@ import wx from 'weixin-js-sdk'
                             });
 
                             wx.ready(function () {
-                                let options = response.data.options;
+                                let options = response.data.data.options;
                                 console.log(options)
                                 // 支付成功后的操作
                                 options.success = function () {
