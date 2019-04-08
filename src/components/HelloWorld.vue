@@ -21,7 +21,7 @@
             v-else
             type="info"
             size="normal"
-            @click="checkIn"
+            @click="checkIn(index)"
           >停车签到</van-button>
         </div> 
         <div class="bottom">
@@ -92,6 +92,7 @@ export default {
       access_token : this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key),
       carAddressDr:'',    //如果没有车位号，填写的车辆所在位置
       show:false,
+      id:'',    //车辆 id
     }
   },
   created(){
@@ -219,12 +220,24 @@ export default {
       })
     },
     // 停车签到
-    checkIn(){
+    checkIn(index){
       this.show = true;
+      this.id = this.carsInfo[index].cid
     },
+    // 提交停车签到信息
     onConfirm(){
       this.show = false
       console.log(this.carAddressDr)
+      this.axios.post(url.editCarInfo,{
+        access_token:this.access_token,
+        id:this.id,
+        parking:this.carAddressDr
+      }).then(res => {
+        console.log(res)
+        Toast(`提交成功！`)
+      }).catch(err => {
+        console.log(err)
+      })
     },
     onCancel(){
       this.show = false;
@@ -353,8 +366,8 @@ export default {
     line-height: 0;
   }
   textarea{
-    width: 21.667rem;
-    height: 6.667rem;
+    width: 18rem;
+    height: 5rem;
     border: 1px solid rgba(50,119,216,1);
     display: block;
     margin: 10px auto;

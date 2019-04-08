@@ -44,27 +44,33 @@
 import url from '@/serviceAPI.config.js'
 import mdFive from '@/md5.js'
 import {Toast} from 'vant'
+import wx from 'weixin-js-sdk'
     export default {
         data() {
             return {
                 headerImg: require('./../assets/img/car-green.jpg'),
                 radio: 0,
                 packageList:[
-                    {
-                        package_name:'体验卡',
-                        package_title:'免费洗三天',
-                        over_time:'新用户专享',
-                        did:true,
-                        car_id:'',
-                    },
-                    {
-                        package_name:'月卡',
-                        package_title:'99元洗车30天',
-                        over_time:'到期时间为2018年5月1日',
-                        did:true
-                    },
+                    // {
+                    //     package_name:'体验卡',
+                    //     package_title:'免费洗三天',
+                    //     over_time:'新用户专享',
+                    //     did:true,
+                    //     car_id:'',
+                    // },
+                    // {
+                    //     package_name:'月卡',
+                    //     package_title:'99元洗车30天',
+                    //     over_time:'到期时间为2018年5月1日',
+                    //     did:true
+                    // },
                 ],
                 access_token : this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key),
+                car_id:'',          //用户选择的车辆id号
+                //package_id:'',      //用户选择的套餐id
+                //unit_price:'',      //套餐单价
+                //total_price:'',     //套餐总价
+                order_id:'',     //订单 id
             }
         },
         mounted(){
@@ -82,8 +88,67 @@ import {Toast} from 'vant'
             })
         },
         methods: {
+            // 下单
             wechatPay(){
+                this.axios.post(url.createOrder,{
+                    access_token:this.access_token,
+                    car_id:this.car_id,
+                    package_id:this.packageList[this.radio].id,         //用户选择的套餐id
+                    unit_price:this.packageList[this.radio].price,      //套餐单价
+                    total_price:this.packageList[this.radio].price,     //套餐总价
+                }).then(res => {
+                    console.log(res)
+                    // 如果下单成功，进入微信支付
+                    if(res.data.code == 0){
+                        this.order_id = res.data.data.order_id;
+                        this.axios.post(url.getWxVoucher,{
+                            access_token:this.access_token,
+                            url:'http://www.ichevip.com/view/pay',
+                            id:this.order_id
+                        }).then(response => {
+                            console.log(response)
+                            let configJson = JSON.parse(response.data.configJson);
+                            console.log(configJson)
+                            wx.config({
+                                debug: configJson.debug, // 开启调试模式,调用的所有api的返回值会在客户端alert出来
+                                appId: configJson.appId, // 必填，公众号的唯一标识
+                                timestamp: configJson.timestamp, // 必填，生成签名的时间戳
+                                nonceStr: configJson.nonceStr, // 必填，生成签名的随机串
+                                signature: configJson.signature,// 必填，签名，见附录1
+                                jsApiList: [
+                                    configJson.jsApiList
+                                ] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+                            });
 
+                            wx.ready(function () {
+                                let options = response.data.options;
+                                console.log(options)
+                                // 支付成功后的操作
+                                options.success = function () {
+                                    window.location.href = `http://www.ichevip.com/view/`;
+                                };
+                                
+                                //  取消支付的操作
+                                options.cancel = function () {
+                                    pay_order = true;
+                                };
+                                
+                                // 支付失败的处理 
+                                options.fail = function () {
+                                    pay_order = true;
+                                };
+                                // 传入参数，发起JSAPI支付
+                                wx.chooseWXPay(options);
+                            })
+                        }).catch(error => {
+                            Toast(`下单失败，请稍后再试！${error}`)
+                        })
+                    }else{
+                        Toast('下单失败，请核对您所填信息是否正确后再试！')
+                    }
+                }).catch(err => {
+                    Toast(`下单失败，请稍后再试！${err}`)
+                })
             }
         },
     }

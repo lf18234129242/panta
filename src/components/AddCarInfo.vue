@@ -56,7 +56,7 @@
         <van-button
             type="info"
             size="large"
-            @click="addCarInfo"
+            @click.stop.once="addCarInfo"
         >绑定车牌号码</van-button>
     </div>
 </template>
@@ -121,7 +121,13 @@ import {Toast} from 'vant'
                         plate_type:this.plate_number.length < 8 ? 1 : 2
                     }).then(res => {
                         if(res.data.code == 0){
-                            this.$router.push({path:'/pay',query:{car_id:res.data.car_id}})
+                            Toast(`车辆信息添加成功！`)
+                            this.$router.push({
+                                path:'/pay',
+                                query:{
+                                    car_id:res.data.car_id
+                                }
+                            })
                         }else{
                             Toast(`绑定失败，请核对信息再重试！`)
                         }
