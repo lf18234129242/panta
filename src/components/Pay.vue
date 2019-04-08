@@ -123,22 +123,26 @@ import wx from 'weixin-js-sdk'
                             wx.ready(function () {
                                 let options = response.data.data.options;
                                 console.log(options)
-                                // 支付成功后的操作
-                                options.success = function () {
-                                    window.location.href = `http://www.ichevip.com/view/`;
-                                };
-                                
-                                //  取消支付的操作
-                                options.cancel = function () {
-                                    pay_order = true;
-                                };
-                                
-                                // 支付失败的处理 
-                                options.fail = function () {
-                                    pay_order = true;
-                                };
-                                // 传入参数，发起JSAPI支付
-                                wx.chooseWXPay(options);
+                                if(options){
+                                    // 支付成功后的操作
+                                    options.success = function () {
+                                        window.location.href = `http://www.ichevip.com/view/`;
+                                    };
+                                    
+                                    //  取消支付的操作
+                                    options.cancel = function () {
+                                        pay_order = true;
+                                    };
+                                    
+                                    // 支付失败的处理 
+                                    options.fail = function () {
+                                        pay_order = true;
+                                    };
+                                    // 传入参数，发起JSAPI支付
+                                    wx.chooseWXPay(options);
+                                }else{
+                                    Toast(`支付失败，请稍后再试！`)
+                                }
                             })
                         }).catch(error => {
                             Toast(`下单失败，请稍后再试！${error}`)
