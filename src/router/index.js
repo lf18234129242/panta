@@ -59,7 +59,7 @@ export default new Router({
       meta:{
         index:1,
         auth:true,
-        title:'正在登录'
+        title:'自定义键盘'
       }
     },
   ]

@@ -33,7 +33,8 @@
         <van-button
             type="info"
             size="large"
-            @click.once="wechatPay"
+            :disabled="wechatPay_button"
+            @click="wechatPay"
         >微信支付</van-button>
     </div>
 </template>
@@ -52,6 +53,7 @@ import wx from 'weixin-js-sdk'
                 access_token : this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key),
                 car_id:'',          //用户选择的车辆id号
                 order_id:'',     //订单 id
+                wechatPay_button:false
             }
         },
         mounted(){
@@ -69,8 +71,20 @@ import wx from 'weixin-js-sdk'
             })
         },
         methods: {
+            // wechatPay_timeOut(){
+            //     this.wechatPay();
+            //     let count = 0;
+            //     let timer = setInterval(() => {
+            //         count++;
+            //         if(count > 3){
+            //             clearInterval(timer)
+            //             count = 0;
+            //         }
+            //     }, 1000);
+            // },
             // 下单
             wechatPay(){
+                this.wechatPay_button = true;
                 this.axios.post(url.createOrder,{
                     access_token:this.access_token,
                     car_id:this.car_id,
