@@ -13,7 +13,7 @@
             >
                 <div class="top">
                     <li class="img">
-                        <img src="./../assets/img/car-green.jpg" alt="">
+                        <img src="./../assets/img/car-green.png" alt="">
                     </li>
                     <li class="center">
                         <span>{{item.package_name}}</span>
@@ -23,11 +23,9 @@
                         <van-radio :name="index"></van-radio>
                     </li>
                 </div>
-                <div class="bottom" v-if="item.package_explain">
-                    {{item.package_explain}}
-                </div>
-                <div class="bottom" v-else>
-                    到期时间:{{item.over_time}}
+                <div class="bottom">
+                    {{item.package_explain}}<br>
+                    到期时间：{{item.over_time}}
                 </div>
             </div>
         </van-radio-group>
@@ -35,7 +33,7 @@
         <van-button
             type="info"
             size="large"
-            @click="wechatPay"
+            @click.once="wechatPay"
         >微信支付</van-button>
     </div>
 </template>
@@ -48,28 +46,11 @@ import wx from 'weixin-js-sdk'
     export default {
         data() {
             return {
-                headerImg: require('./../assets/img/car-green.jpg'),
+                headerImg: require('./../assets/img/car-green.png'),
                 radio: 0,
-                packageList:[
-                    // {
-                    //     package_name:'体验卡',
-                    //     package_title:'免费洗三天',
-                    //     over_time:'新用户专享',
-                    //     did:true,
-                    //     car_id:'',
-                    // },
-                    // {
-                    //     package_name:'月卡',
-                    //     package_title:'99元洗车30天',
-                    //     over_time:'到期时间为2018年5月1日',
-                    //     did:true
-                    // },
-                ],
+                packageList:[],
                 access_token : this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key),
                 car_id:'',          //用户选择的车辆id号
-                //package_id:'',      //用户选择的套餐id
-                //unit_price:'',      //套餐单价
-                //total_price:'',     //套餐总价
                 order_id:'',     //订单 id
             }
         },
@@ -170,7 +151,7 @@ import wx from 'weixin-js-sdk'
     }
     .package{
         width:24.333rem;
-        height:10.667rem;
+        height:11.667rem;
         background:rgba(255,255,255,1);
         box-shadow:0px 4px 8px 0px rgba(0,0,0,0.04);
         border-radius:.533rem;

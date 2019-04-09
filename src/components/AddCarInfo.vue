@@ -18,6 +18,7 @@
                 class-prefix="my-icon"
                 left-icon="coupon-o"
             />
+            
             <div class="two-button">
                 <li 
                     :class="[isDisabled ? 'blueBg' : 'whiteBg']"
@@ -42,7 +43,7 @@
                 left-icon="hotel-o"
                 @click.stop="checkVillage"
             />
-            <!-- 弹出层 -->
+            <!-- 选择小区名称弹出层 -->
             <van-popup v-model="show" position="bottom" :overlay="true">
                 <van-picker
                     show-toolbar
@@ -52,24 +53,26 @@
                     @cancel="onCancel"
                 />
             </van-popup>
+            
         </div>
         <van-button
             type="info"
             size="large"
-            @click.stop.once="addCarInfo"
+            @click="submitAddCarInfo"
         >绑定车牌号码</van-button>
     </div>
 </template>
 
 <script>
 import url from '@/serviceAPI.config.js'
+import authorization from '@/authorization.js'
 import mdFive from '@/md5.js'
 import {Toast} from 'vant'
     export default {
         data() {
             return {
-                headerImg:require('./../assets/img/car-red.jpg'),
-                car_owner: localStorage.getItem('username'),
+                headerImg:require('./../assets/img/car-red.png'),
+                car_owner:'',
                 plate_number: '',   //车牌号
                 plate_type:1,   //车牌种类，1-普通 2-新能源；默认 1
                 fixed:1,       //1-固定车位，2-非固定车位；默认 1
@@ -84,7 +87,25 @@ import {Toast} from 'vant'
                 access_token : this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key),
             }
         },
+        created(){
+            let openid = localStorage.getItem('openid')
+            if(openid && openid !== 'undefined'){
+                //如果有 openid ，获取用户 姓名，手机号
+                authorization.getClientInfo()
+            }else{
+                localStorage.setItem('openid',this.$route.query.openid)
+                let openid = localStorage.getItem('openid')
+                if(openid && openid !== 'undefined'){
+                    //如果有 openid ，获取用户 姓名，手机号
+                    authorization.getClientInfo()
+                }else{
+                    // 授权第一步
+                    authorization.getSelfInfo()
+                }
+            } 
+        },
         mounted(){
+            this.car_owner = localStorage.getItem('username');
             this.axios.post(url.getVillageList,{
                 access_token:this.access_token
             }).then(res => {
@@ -98,15 +119,13 @@ import {Toast} from 'vant'
         },
         methods: {
             // 绑定车牌号
-            addCarInfo(){
-                if(this.plate_number.length < 7 && this.plate_number.length > 8){
+            submitAddCarInfo(){
+                if(this.plate_number.length < 7 || this.plate_number.length > 8){
                     Toast(`请输入正确的车牌号码！`)
                     return false;
-                }else if(this.fixed == 1){
-                    if(!this.parking){
-                        Toast(`如果您有固定车位，请输入车位号码`)
-                        return false;
-                    }
+                }else if(this.fixed == 1 && !this.parking){
+                    Toast(`如果您有固定车位，请输入车位号码`)
+                    return false;
                 }else if(this.village_name == ''){
                     Toast(`请输入所在的小区名称！`)
                     return false;
@@ -120,12 +139,13 @@ import {Toast} from 'vant'
                         village_id:this.village_id,
                         plate_type:this.plate_number.length < 8 ? 1 : 2
                     }).then(res => {
+                        console.log(res)
                         if(res.data.code == 0){
                             Toast(`车辆信息添加成功！`)
                             this.$router.push({
                                 path:'/pay',
                                 query:{
-                                    car_id:res.data.car_id
+                                    car_id:res.data.data.car_id
                                 }
                             })
                         }else{
@@ -147,6 +167,7 @@ import {Toast} from 'vant'
                 this.isDisabled = false;
                 this.parkingIsDisabled = true;
                 this.parkingPlaceholder = '无固定车位无需填写'
+                this.parking = ''
             },
             // 选择小区
             checkVillage(){
@@ -224,5 +245,6 @@ import {Toast} from 'vant'
         display: block;
         line-height: 0;
     }
+    
 }
 </style>

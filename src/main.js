@@ -9,7 +9,7 @@ import mdFive from '@/md5.js'
 import url from '@/serviceAPI.config.js'
 import ShadowBox from './component/ShadowBox.vue'
 import PageHeader from './component/PageHeader.vue'
-import {Button, Field, Cell, CellGroup, Popup, Picker, RadioGroup, Radio, Toast, Dialog} from 'vant'
+import {Button, Field, Cell, CellGroup, Popup, Picker, RadioGroup, Radio, Toast, Dialog, PasswordInput} from 'vant'
 
 // 获取url里的参数值
 import geturlpara from './geturlpara.js'
@@ -17,7 +17,7 @@ import geturlpara from './geturlpara.js'
 Vue.component('shadow-box',ShadowBox)
 Vue.component('page-header',PageHeader)
 
-Vue.use(Button).use(Field).use(Cell).use(CellGroup).use(Popup).use(Picker).use(RadioGroup).use(Radio).use(Toast).use(Dialog)
+Vue.use(Button).use(Field).use(Cell).use(CellGroup).use(Popup).use(Picker).use(RadioGroup).use(Radio).use(Toast).use(Dialog).use(PasswordInput)
 
 Vue.config.productionTip = false
 //把 `******` 加到 `Vue` 的原型中
