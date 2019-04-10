@@ -144,17 +144,6 @@ import {Toast} from 'vant'
                     if(res.data.code == 1020009){
                         let isError = this.$route.query.status
                         this.snsapi_userinfo()
-                        // 如果 url 里面没有 isError 参数，就跳转请求连接
-                        // if(isError==undefined || !isError){
-                            // window.location.href = res.data.data.oauth_url;
-                            // 如果请求返回 ERROR ，则主动请求授权
-                        // }else if(isError == 'ERROR'){
-                        //     // 非静默授权模式
-                        //     this.snsapi_userinfo()
-                        // }else if(isError == 'SUCCESS'){
-                        //     // 静默授权模式
-                        //     this.snsapi_base()
-                        // }
                         return false;
                     // 静默授权，获取微信名 头像 openid id
                     }else if(res.data.code == 0){

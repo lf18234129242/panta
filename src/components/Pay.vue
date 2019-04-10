@@ -16,7 +16,7 @@
                         <img src="./../assets/img/car-green.png" alt="">
                     </li>
                     <li class="center">
-                        <span>{{item.package_name}}</span>
+                        <span>{{item.package_name}} {{item.rest_cnt ? `剩余${item.rest_cnt}份` : ''}}</span>
                         <p>{{item.package_title}}</p>
                     </li>
                     <li class="radio">

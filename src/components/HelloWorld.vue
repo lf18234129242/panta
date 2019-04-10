@@ -231,8 +231,7 @@ export default {
     // 提交停车签到信息
     onConfirm(){
       this.show = false
-      console.log(this.carAddressDr)
-      this.axios.post(url.editCarInfo,{
+      this.axios.post(url.parkingSign,{
         access_token:this.access_token,
         id:this.id,
         parking:this.carAddressDr
