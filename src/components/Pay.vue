@@ -71,17 +71,6 @@ import wx from 'weixin-js-sdk'
             })
         },
         methods: {
-            // wechatPay_timeOut(){
-            //     this.wechatPay();
-            //     let count = 0;
-            //     let timer = setInterval(() => {
-            //         count++;
-            //         if(count > 3){
-            //             clearInterval(timer)
-            //             count = 0;
-            //         }
-            //     }, 1000);
-            // },
             // 下单
             wechatPay(){
                 this.wechatPay_button = true;
@@ -178,7 +167,6 @@ import wx from 'weixin-js-sdk'
             height: 5.4rem;
             border-bottom: 1px dashed #CFCFCF;
             align-items: center;
-            // justify-content: center;
             .img{
                 width: 2.8rem;
                 height: 2.8rem;
@@ -193,7 +181,6 @@ import wx from 'weixin-js-sdk'
             .center{
                 height: 5.4rem;
                 width: 15.133rem;
-                // display: flex;
                 span{
                     display: block;
                     font-size: .867rem;

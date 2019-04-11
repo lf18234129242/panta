@@ -139,7 +139,6 @@ import {Toast} from 'vant'
                 this.axios.post(url.getSelfInfo,{
                     access_token:this.access_token
                 }).then(res=> {
-                    console.log(res)
                     // 如果用户未登录   跳转到后台返回的链接
                     if(res.data.code == 1020009){
                         let isError = this.$route.query.status

@@ -1,16 +1,16 @@
 <template>
-    <div>
+    <div class="keyboard">
         <div class="input-box">
-            <input type="text" maxlength="1" v-model="first" @focus="show_plate_number">
-            <input type="text" maxlength="1" v-model="second" v-focus="numFocusArr[0]">
-            <input type="text" maxlength="1" v-model="third" v-focus="numFocusArr[1]">
-            <input type="text" maxlength="1" v-model="fourth" v-focus="numFocusArr[2]">
-            <input type="text" maxlength="1" v-model="fifth" v-focus="numFocusArr[3]">
-            <input type="text" maxlength="1" v-model="sixth" v-focus="numFocusArr[4]">
-            <input type="text" maxlength="1" v-model="seventh" v-focus="numFocusArr[5]">
-            <input type="text" maxlength="1" v-model="eighth" v-focus="numFocusArr[6]">
+            <li @click="firstClick">{{first}}</li>
+            <li @click="secondClick">{{numArr[0]}}</li>
+            <li @click="secondClick">{{numArr[1]}}</li>
+            <li @click="secondClick">{{numArr[2]}}</li>
+            <li @click="secondClick">{{numArr[3]}}</li>
+            <li @click="secondClick">{{numArr[4]}}</li>
+            <li @click="secondClick">{{numArr[5]}}</li>
+            <li @click="secondClick">{{numArr[6]}}</li>
         </div>
-        <!-- 选择车牌号 首个汉字 弹出层 -->
+        <!-- 选择车牌号 首个汉字键盘 弹出层 -->
         <div class="plate_number">
             <van-popup
                 v-model="show_chinese"
@@ -18,10 +18,11 @@
                 :overlay="true"
                 overlay-class="displayNone"
             >
-                <div class="plate_number_box">
+                <div class="plate_chinese_box">
+                    <!-- 点击对应的汉字，进行输入 -->
                     <van-button
                         size="small"
-                        v-for="(item, index) in ChineseList"
+                        v-for="(item, index) in ChineseList" 
                         :key="item.id"
                         @click="checkChinese(index)"
                     >{{item.name}}</van-button>
@@ -37,6 +38,7 @@
                 overlay-class="displayNone"
             >
                 <div class="plate_number_box">
+                    <!-- 点击对应的字母或数字，进行输入 -->
                     <van-button
                         size="small"
                         v-for="(item, index) in English_Number"
@@ -84,160 +86,92 @@
                     {name:'川',id:25},
                     {name:'宁',id:26},
                     {name:'琼',id:27},
+                    {name:'删除',id:99},
                 ],
                 English_Number:[
-                    {id:28,name:'1'},
-                    {id:29,name:'2'},
-                    {id:30,name:'3'},
-                    {id:31,name:'4'},
-                    {id:32,name:'5'},
-                    {id:33,name:'6'},
-                    {id:34,name:'7'},
-                    {id:35,name:'8'},
-                    {id:36,name:'9'},
-                    {id:37,name:'0'},
-                    {id:38,name:'Q'},
-                    {id:39,name:'W'},
-                    {id:40,name:'E'},
-                    {id:41,name:'R'},
-                    {id:42,name:'T'},
-                    {id:43,name:'Y'},
-                    {id:44,name:'U'},
-                    {id:45,name:'I'},
-                    {id:46,name:'O'},
-                    {id:47,name:'P'},
-                    {id:48,name:'A'},
-                    {id:49,name:'S'},
-                    {id:50,name:'D'},
-                    {id:51,name:'F'},
-                    {id:52,name:'G'},
-                    {id:53,name:'H'},
-                    {id:54,name:'J'},
-                    {id:55,name:'K'},
-                    {id:56,name:'L'},
-                    {id:57,name:'Z'},
-                    {id:58,name:'X'},
-                    {id:59,name:'C'},
-                    {id:60,name:'V'},
-                    {id:61,name:'B'},
-                    {id:62,name:'N'},
-                    {id:63,name:'M'},
+                    {name:'1',id:28},
+                    {name:'2',id:29},
+                    {name:'3',id:30},
+                    {name:'4',id:31},
+                    {name:'5',id:32},
+                    {name:'6',id:33},
+                    {name:'7',id:34},
+                    {name:'8',id:35},
+                    {name:'9',id:36},
+                    {name:'0',id:37},
+                    {name:'Q',id:38},
+                    {name:'W',id:39},
+                    {name:'E',id:40},
+                    {name:'R',id:41},
+                    {name:'T',id:42},
+                    {name:'Y',id:43},
+                    {name:'U',id:44},
+                    {name:'I',id:45},
+                    {name:'O',id:46},
+                    {name:'P',id:47},
+                    {name:'A',id:48},
+                    {name:'S',id:49},
+                    {name:'D',id:50},
+                    {name:'F',id:51},
+                    {name:'G',id:52},
+                    {name:'H',id:53},
+                    {name:'J',id:54},
+                    {name:'K',id:55},
+                    {name:'L',id:56},
+                    {name:'Z',id:57},
+                    {name:'X',id:58},
+                    {name:'C',id:59},
+                    {name:'V',id:60},
+                    {name:'B',id:61},
+                    {name:'N',id:62},
+                    {name:'M',id:63},
+                    {name:'删除',id:99},
                 ],
                 plate_number: '',   //车牌号
                 first:'',
-                second:'',
-                third:'',
-                fourth:'',
-                fifth:'',
-                sixth:'',
-                seventh:'',
-                eighth:'',
-                second_focus:false,
-                third_focus:false,
-                fourth_focus:false,
-                fifth_focus:false,
-                sixth_focus:false,
-                seventh_focus:false,
-                eighth_focus:false,
-                numFocusArr:[false,false,false,false,false,false,false,]
+                numArr:[],
             }
         },
-        directives: {
-            focus: {
-                inserted: function (el, {value}) {
-                    if (value) {
-                        el.focus();
-                    }
-                }
-            }
-        },
-        watch:{
-            first(){
-                console.log(this.first)
-                // this.second_focus = true;
-                this.numFocusArr[0] = true;
-
+        methods: {
+            //第一个输入框聚焦，唤起汉字键盘，隐藏字母数字键盘
+            firstClick(){
+                this.show_chinese = true;
+                this.show_allBoard = false;
+            },
+            //第二个之后的输入框聚焦，唤起字母数字键盘，隐藏汉字键盘
+            secondClick(){
                 this.show_chinese = false;
                 this.show_allBoard = true;
             },
-            second(){
-                // this.second_focus = false;
-                this.numFocusArr[0] = false;
-                // this.third_focus = true;
-                this.numFocusArr[1] = true;
-                console.log(this.second)
-            },
-            third(){
-                // this.third_focus = false;
-                this.numFocusArr[1] = false;
-                // this.fourth_focus = true;
-                this.numFocusArr[2] = true;
-                console.log(this.third)
-            },
-            fourth(){
-                // this.fourth_focus = false;
-                this.numFocusArr[2] = false;
-                // this.fifth = true;
-                this.numFocusArr[3] =true; 
-                console.log(this.fourth)
-            },
-            fifth(){
-                // this.fifth_focus = false;
-                this.numFocusArr[3] = false;
-                // this.sixth = true;
-                this.numFocusArr[4] =true; 
-                console.log(this.fifth)
-            },
-            sixth(){
-                // this.sixth_focus = false;
-                this.numFocusArr[4] = false;
-                // this.seventh = true;
-                this.numFocusArr[5] = true;
-                console.log(this.sixth)
-            },
-            seventh(){
-                // this.seventh_focus = false;
-                this.numFocusArr[5] = false;
-                // this.eighth = true;
-                this.numFocusArr[6] = true;
-                console.log(this.seventh)
-            },
-            eighth(){
-                // this.eighth_focus = false;
-                this.numFocusArr[6] = false;
-                console.log(this.eighth)
-            },
-        },
-        methods: {
-            //第一个输入框聚焦，唤起汉字键盘
-            show_plate_number(){
-                this.show_chinese = true;
-            },
             // 选择车牌号前面的汉字 
             checkChinese(index){
-                this.first = this.ChineseList[index].name;
-
+                // 如果点击删除键，删除第一个格的内容
+                if(this.ChineseList[index].id == 99){
+                    this.first = ''
+                }else{
+                    // 把选中的字赋值给第一个格，并且切换键盘
+                    this.first = this.ChineseList[index].name;
+                    this.show_chinese = false;
+                    this.show_allBoard = true;
+                }
             },
             // 选择车牌号后面的数字和字母 
             checkEnglish_num(index){
-                let numArr = ['','','','','','','',]
-                // let numFocusArr = [this.second_focus,this.third_focus,this.fourth_focus,this.fifth_focus,this.sixth_focus,this.seventh_focus,this.eighth_focus]
-                for (const i in this.numFocusArr) {
-                    if(this.numFocusArr[i]=true){
-                        console.log(this.numFocusArr)
-                        console.log(this.numFocusArr[i] + i)
-                        numArr[i] = (this.English_Number[index].name)
-                        console.log(numArr)
-                        
-                        this.second = numArr[0]
-                        console.log(this.second)
-                        this.third = numArr[1]
-                        this.fourth = numArr[2]
-                        this.fifth = numArr[3]
-                        this.sixth = numArr[4]
-                        this.seventh = numArr[5]
-                        this.eighth = numArr[6]
-                    }   
+                // 如果点击删除键，删除 numArr 的最后一个值
+                if(this.English_Number[index].id == 99){
+                    this.numArr.pop()
+                    // 如果 numArr 里面被删的没有值了，切换键盘
+                    if(this.numArr.length == 0){
+                        this.show_chinese = true;
+                        this.show_allBoard = false;
+                    }
+                }else{
+                    // 把选中的值 push 到 numArr 内
+                    this.numArr.push(this.English_Number[index].name)
+                    // 如果 numArr 中的值超过 7 个（车牌号的最大位数），删除最后一个
+                    if(this.numArr.length > 7){
+                        this.numArr.pop()
+                    }
                 }
             },
         },
@@ -245,29 +179,67 @@
 </script>
 
 <style scoped lang="scss">
+.keyboard{
+    width: 100%;
+    position: absolute;
+}
 .input-box{
-    width: 25rem;
-    height: 3rem;
+    width: 20rem;
+    height: 2.5rem;
     display: flex;
-    input{
+    justify-content: center;
+    li{
         flex: 1;
-        width: 3rem;
+        border: 1px solid #999;
+        box-sizing: border-box;
+        margin-left: -1px;
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    li:nth-child(1){
+        margin-left: 0;
     }
 }
 .plate_number{
     .van-popup--bottom{
         background: #eee;
     }
+    .plate_chinese_box{
+        width: 100%;
+        padding: 0.5rem;
+        box-sizing: border-box;
+        background: #aaa;
+        .van-button--small{
+            width: 14.2%;
+            height: 4rem;
+            min-width: 0;
+        }
+    }
+}
+.allBoard{
     .plate_number_box{
         width: 100%;
-        padding: 1rem 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-wrap: wrap;
+        padding: 0.5rem;
+        box-sizing: border-box;
+        background: #aaa;
         .van-button--small{
-            min-width: 4rem;
-            height: 4rem;
+            width: 10%;
+            height: 3rem;
+            min-width: 0;
+        }
+        .van-button--small:nth-child(1){
+            margin-bottom: 5px;
+        }
+        .van-button--small:nth-child(21){
+            margin-left: 5%;
+        }
+        .van-button--small:nth-child(30){
+            margin-left: 5%;
+        }
+        .van-button--small:last-child{
+            width: 20%;
         }
     }
 }
