@@ -52,15 +52,5 @@ export default new Router({
         title:'正在登录'
       }
     },
-    {
-      path: '/keyboard',
-      name: 'Keyboard',
-      component: loadView('Keyboard'),
-      meta:{
-        index:1,
-        auth:true,
-        title:'自定义键盘'
-      }
-    },
   ]
 })
