@@ -4,6 +4,7 @@
             <img :src="headerImg" alt="">
         </header>
         <h1>{{descriptionTitle}}</h1>
+        <slot></slot>
     </div>
 </template>
 

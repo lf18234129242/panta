@@ -52,5 +52,35 @@ export default new Router({
         title:'正在登录'
       }
     },
+    {
+      path: '/carWasher-login',
+      name: 'CarWasher-login',
+      component: loadView('CarWasher-login'),
+      meta:{
+        index:1,
+        auth:true,
+        title:'登录'
+      }
+    },
+    {
+      path: '/carWasher-admin',
+      name: 'CarWasher-admin',
+      component: loadView('CarWasher-admin'),
+      meta:{
+        index:2,
+        auth:true,
+        title:'操作后台'
+      }
+    },
+    {
+      path: '/carWasher-recording',
+      name: 'CarWasher-recording',
+      component: loadView('CarWasher-recording'),
+      meta:{
+        index:3,
+        auth:true,
+        title:'洗车记录'
+      }
+    },
   ]
 })

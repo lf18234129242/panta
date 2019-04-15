@@ -12,6 +12,13 @@ const URL = {
     getWxVoucher: BASEURL + 'Orderpay/getWxVoucher',            //支付页-获取凭证信息
     getVillageList: BASEURL + 'Village/getVillageList',            //获取小区列表
 
+    // 洗车工
+    signIn: BASEURL + 'Washer/signIn',      //洗车工登录
+    getTaskList: BASEURL + 'Washer/getTaskList',      //洗车工获取任务
+    getRecord: BASEURL + 'Washer/getRecord',      //洗车工获取洗车记录
+    uploadRecordImages: BASEURL + 'Washer/uploadRecordImages',      //洗车工提交上传图片
+    basePicUpload: BASEURL + 'Common/basePicUpload',      //洗车工上传图片 base 64
+
 }
 
 module.exports = URL;
