@@ -1,9 +1,7 @@
 <template>
   <div id="app">
     <transition :name="transitionName">
-      <!-- <keep-alive include="placeOrder"> -->
-        <router-view/>
-      <!-- </keep-alive> -->
+      <router-view/>
     </transition>
   </div>
 </template>

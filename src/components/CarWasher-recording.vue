@@ -9,28 +9,36 @@
             @click="onClickTab"
         >
             <van-tab title="洗车前">
-                <van-uploader :after-read="onRead_berfore" :disabled="img_before_disabled">
+                <van-uploader :after-read="onRead_berfore" v-if="img_before_disabled">
                     <div class="img-box">
                         <img :src="warsher_brfore" alt="">
                     </div>
                 </van-uploader>
+                <div class="img-box" v-else-if="!img_before_disabled" @click.stop="show_before_img">
+                    <img :src="warsher_brfore" alt="">
+                </div>
                 <van-button
                     type="info"
                     size="large"
                     :disabled = "disabled_1"
+                    v-if="is_show_before_button"
                     @click="submit_img_before"
                 >提交</van-button>
             </van-tab>
             <van-tab title="洗车后">
-                <van-uploader :after-read="onRead_after" :disabled="img_after_disabled">
+                <van-uploader :after-read="onRead_after" v-if="img_after_disabled">
                     <div class="img-box">
                         <img :src="warsher_after" alt="">
                     </div>
                 </van-uploader>
+                <div class="img-box" v-else-if="!img_after_disabled" @click.stop="show_after_img">
+                    <img :src="warsher_after" alt="">
+                </div>
                 <van-button
                     type="info"
                     size="large"
                     :disabled = "disabled_2"
+                    v-if="is_show_after_button"
                     @click="submit_img_after"
                 >提交</van-button>
             </van-tab>
@@ -41,7 +49,7 @@
 </template>
 
 <script>
-import { Toast } from 'vant';
+import { Toast, ImagePreview} from 'vant';
 import url from '@/serviceAPI.config.js'
 import mdFive from '@/md5.js'
     export default {
@@ -57,8 +65,11 @@ import mdFive from '@/md5.js'
                 img_path:'',
                 disabled_1:false,
                 disabled_2:false,
-                img_before_disabled:false,
-                img_after_disabled:false,
+                is_show_before_button:true,
+                is_show_after_button:true,
+                img_before_disabled:true,
+                img_after_disabled:true,
+                id:'',      //上传图片所需 id
             }
         },
         mounted(){
@@ -68,11 +79,37 @@ import mdFive from '@/md5.js'
                 task_id:this.$route.query.task_id,
             }).then(res => {
                 console.log(res)
+                if(res.data.code == 0){
+                    this.id = res.data.data.id
+                    console.log(this.id)
+                    this.warsher_brfore = res.data.data.before_img.img_url
+                    this.warsher_after = res.data.data.after_img.img_url
+                    // 如果获取到图片，禁用上传图片功能，隐藏提交 button
+                    if(this.warsher_brfore && this.warsher_brfore !== undefined){
+                        this.is_show_before_button = false;
+                        this.img_before_disabled = false;
+                    }
+                    if(this.warsher_after && this.warsher_after !== undefined){
+                        this.is_show_after_button = false;
+                        this.img_after_disabled = false;
+                    }
+                }
             }).catch(err => {
                 console.log(err)
             })
         },
         methods: {
+            //查看图片
+            show_before_img(){
+                ImagePreview([
+                    this.warsher_brfore
+                ]);
+            },
+            show_after_img(){
+                ImagePreview([
+                    this.warsher_after
+                ]);
+            },
             onClickTab(index, title) {
                 if(index == 0){
                     this.active == 0
@@ -110,8 +147,8 @@ import mdFive from '@/md5.js'
                 }).then(res => {
                     console.log(res)
                     if(res.data.code == 0){
-                        this.img_name = res.data.data[0].big_img.file_name;
-                        this.img_path = res.data.data[0].big_img.img_path;
+                        this.img_name = res.data.data[0].real_img.file_name;
+                        this.img_path = res.data.data[0].real_img.img_path;
                         this.img_arr_box = []
                     }
                 }).catch(err => {
@@ -123,7 +160,7 @@ import mdFive from '@/md5.js'
                 this.axios.post(url.uploadRecordImages,{
                     access_token:this.access_token,
                     user_token:localStorage.getItem('user_token'),
-                    cr_id:this.$route.query.task_id,
+                    cr_id:this.id,
                     img_clear_status:img_clear_status,
                     img_name:this.img_name,
                     img_path:this.img_path,

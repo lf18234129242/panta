@@ -10,6 +10,7 @@
                 placeholder="请输入姓名（微信ID）"
                 label="姓名"
                 left-icon="contact"
+                @focus="hideKeyboard"
             />
             <div class="input-box" @click="clickShowKeyboard">
                 <li>{{first}}</li>
@@ -37,13 +38,15 @@
                 label="车位号码"
                 left-icon="flag-o"
                 :disabled="parkingIsDisabled"
+                @focus="hideKeyboard"
             />
             <van-field
                 v-model="village_name"
                 placeholder="请选择小区名称"
                 label="小区名称"
                 left-icon="hotel-o"
-                @click.stop="checkVillage"
+                @click="checkVillage"
+                @focus="hideKeyboard"
             />
             <!-- 选择小区名称弹出层 -->
             <van-popup v-model="show" position="bottom" :overlay="true">
@@ -250,6 +253,11 @@ import {Toast} from 'vant'
             })
         },
         methods: {
+            // 当其他input 聚焦的时候，收起虚拟键盘
+            hideKeyboard(){
+                this.show_chinese = false;
+                this.show_allBoard = false;
+            },
             //获取用户 姓名、手机号
             getClientInfo(){
                 let openid = localStorage.getItem('openid')

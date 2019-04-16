@@ -13,13 +13,13 @@
                         path:'./carWasher-recording',
                         query:{
                             task_id:item_.task_id,
-                            plate_number:item.plate_number
+                            plate_number:item_.plate_number
                         }
                     }">
                         <shadow-box>
                             <div class="top">
                                 <li>{{item_.parking}}</li>
-                                <li>{{item_.plate_number}}</li>
+                                <li :class="[item_.plate_number.length == 7 ? 'blue-bg' : 'green-bg']">{{item_.plate_number}}</li>
                             </div>
                             <div class="bottom">
                                 <li class="">
@@ -47,7 +47,7 @@ import mdFive from '@/md5.js'
         data() {
             return {
                 access_token : this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key),
-                user_token:localStorage.getItem('user_token'),
+                user_token:'',
                 taskList:[
                     {taskList_:[]},
                     {taskList_:[]},
@@ -58,6 +58,11 @@ import mdFive from '@/md5.js'
             }
         },
         mounted(){
+            // 验证登录
+            this.user_token = localStorage.getItem('user_token');
+            if(!this.user_token && this.user_token !== undefined){
+                this.$router.push('./CarWasher-login')
+            }
             this.active = 1;
             this.getTaskList_2();
         },
@@ -147,6 +152,12 @@ import mdFive from '@/md5.js'
                 line-height: 2.5rem;
                 text-align: center;
             }
+            .green-bg{
+                background:rgba(85,193,91,1);
+            }
+            .blue-bg{
+                background: #108EE9;
+            }
             li:nth-child(1){
                 width: 6.4rem;
                 background:rgba(252,223,20,1);
@@ -154,7 +165,6 @@ import mdFive from '@/md5.js'
             }
             li:nth-child(2){
                 width:8.933rem;
-                background:rgba(85,193,91,1);
                 border-radius:2px;
             }
         }
