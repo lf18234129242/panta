@@ -14,12 +14,12 @@
 
         <section>
             <h2>洗车前</h2>
-            <div class="img-box">
-                <img :src="warsher_before_img" alt="" id="warsher_before_img">
+            <div class="img-box" @click="show_before_img">
+                <img :src="warsher_before_img" alt="">
             </div>
             <h2>洗车后</h2>
-            <div class="img-box">
-                <img :src="warsher_after_img" alt="" id="warsher_after_img">
+            <div class="img-box" @click="show_after_img">
+                <img :src="warsher_after_img" alt="">
             </div>
         </section>
 
@@ -42,9 +42,7 @@
 <script>
 import url from '@/serviceAPI.config.js'
 import mdFive from '@/md5.js'
-import { Toast } from 'vant';
-import Viewer from 'viewerjs'
-import 'viewerjs/dist/viewer.css'
+import { Toast, ImagePreview} from 'vant';
     export default {
         data() {
             return {
@@ -58,7 +56,8 @@ import 'viewerjs/dist/viewer.css'
                 disabled_button:false,
                 is_show_rate:true,
                 access_token : this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key),
-                i:0,
+                instance_before:'',
+                instance_after:'',
             }
         },
         mounted(){
@@ -76,18 +75,36 @@ import 'viewerjs/dist/viewer.css'
                 this.nickname = res.data.data.nickname
                 this.r_name = res.data.data.r_name
                 this.warsher_before_img = res.data.data.before_img.img_url
-                var viewer = new Viewer(document.getElementById('warsher_before_img'))
                 this.warsher_after_img = res.data.data.after_img.img_url
-                var viewer = new Viewer(document.getElementById('warsher_after_img'))
 
             }).catch(err => {
                 console.log(err)
             })
         },
-        destroyed(){
-            console.log('ImagePreview destroyed')
+        beforeRouteLeave(to,from,next){
+            if(this.active == 0){
+                this.instance_before.close();
+            }else if(this.active == 1){
+                this.instance_after.close();
+            }else{
+                return;
+            }
+            next();
         },
         methods: {
+            //查看图片
+            show_before_img(){
+                this.active = 0;
+                this.instance_before = ImagePreview({
+                    images: [this.warsher_before_img],
+                });
+            },
+            show_after_img(){
+                this.active = 1;
+                this.instance_after = ImagePreview({
+                    images: [this.warsher_after_img],
+                });
+            },
             onClickRight() {
                 this.$router.push('/feedback')
             },

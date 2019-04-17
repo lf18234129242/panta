@@ -1,7 +1,6 @@
 <template>
     <div class="Feedback">
         <van-nav-bar title="反馈建议"></van-nav-bar>
-
         <textarea name="textarea" maxlength="150" v-model="textarea_value"></textarea>
         <van-button
             type="info"

@@ -1,6 +1,6 @@
 <template>
     <div class="carWasher-recording">
-        <h2>{{plate_number}}{{active_}}</h2>
+        <h2>{{plate_number}}</h2>
         <van-tabs
             type="card"
             animated
