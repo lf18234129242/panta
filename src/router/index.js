@@ -43,6 +43,36 @@ export default new Router({
       }
     },
     {
+      path: '/user-rate',
+      name: 'User-rate',
+      component: loadView('User-rate'),
+      meta:{
+        index:4,
+        auth:true,
+        title:'评价打分'
+      }
+    },
+    {
+      path: '/washer-record',
+      name: 'Washer-record',
+      component: loadView('Washer-record'),
+      meta:{
+        index:3,
+        auth:true,
+        title:'洗车记录'
+      }
+    },
+    {
+      path: '/feedback',
+      name: 'Feedback',
+      component: loadView('Feedback'),
+      meta:{
+        index:5,
+        auth:true,
+        title:'反馈建议'
+      }
+    },
+    {
       path: '/author',
       name: 'Author',
       component: loadView('Author'),
@@ -53,13 +83,33 @@ export default new Router({
       }
     },
     {
-      path: '/keyboard',
-      name: 'Keyboard',
-      component: loadView('Keyboard'),
+      path: '/carWasher-login',
+      name: 'CarWasher-login',
+      component: loadView('CarWasher-login'),
       meta:{
         index:1,
         auth:true,
-        title:'自定义键盘'
+        title:'登录'
+      }
+    },
+    {
+      path: '/carWasher-admin',
+      name: 'CarWasher-admin',
+      component: loadView('CarWasher-admin'),
+      meta:{
+        index:2,
+        auth:true,
+        title:'操作后台'
+      }
+    },
+    {
+      path: '/carWasher-recording',
+      name: 'CarWasher-recording',
+      component: loadView('CarWasher-recording'),
+      meta:{
+        index:3,
+        auth:true,
+        title:'洗车记录'
       }
     },
   ]

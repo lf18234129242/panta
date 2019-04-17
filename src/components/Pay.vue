@@ -16,7 +16,7 @@
                         <img src="./../assets/img/car-green.png" alt="">
                     </li>
                     <li class="center">
-                        <span>{{item.package_name}}</span>
+                        <span>{{item.package_name}} {{item.rest_cnt ? `剩余${item.rest_cnt}份` : ''}}</span>
                         <p>{{item.package_title}}</p>
                     </li>
                     <li class="radio">
@@ -71,17 +71,6 @@ import wx from 'weixin-js-sdk'
             })
         },
         methods: {
-            // wechatPay_timeOut(){
-            //     this.wechatPay();
-            //     let count = 0;
-            //     let timer = setInterval(() => {
-            //         count++;
-            //         if(count > 3){
-            //             clearInterval(timer)
-            //             count = 0;
-            //         }
-            //     }, 1000);
-            // },
             // 下单
             wechatPay(){
                 this.wechatPay_button = true;
@@ -178,7 +167,6 @@ import wx from 'weixin-js-sdk'
             height: 5.4rem;
             border-bottom: 1px dashed #CFCFCF;
             align-items: center;
-            // justify-content: center;
             .img{
                 width: 2.8rem;
                 height: 2.8rem;
@@ -224,7 +212,7 @@ import wx from 'weixin-js-sdk'
         height:3.2rem;
         background:rgba(50,119,216,1);
         border-radius:0.4rem;
-        margin: 0 auto;
+        margin: 0 auto 2rem;
         display: block;
         line-height: 0;
     }
