@@ -193,7 +193,6 @@ import wx from 'weixin-js-sdk'
             .center{
                 height: 5.4rem;
                 width: 15.133rem;
-                // display: flex;
                 span{
                     display: block;
                     font-size: .867rem;
