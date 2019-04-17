@@ -43,6 +43,36 @@ export default new Router({
       }
     },
     {
+      path: '/user-rate',
+      name: 'User-rate',
+      component: loadView('User-rate'),
+      meta:{
+        index:4,
+        auth:true,
+        title:'评价打分'
+      }
+    },
+    {
+      path: '/washer-record',
+      name: 'Washer-record',
+      component: loadView('Washer-record'),
+      meta:{
+        index:3,
+        auth:true,
+        title:'洗车记录'
+      }
+    },
+    {
+      path: '/feedback',
+      name: 'Feedback',
+      component: loadView('Feedback'),
+      meta:{
+        index:5,
+        auth:true,
+        title:'反馈建议'
+      }
+    },
+    {
       path: '/author',
       name: 'Author',
       component: loadView('Author'),

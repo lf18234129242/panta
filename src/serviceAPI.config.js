@@ -18,6 +18,10 @@ const URL = {
     getRecord: BASEURL + 'Washer/getRecord',      //洗车工获取洗车记录
     uploadRecordImages: BASEURL + 'Washer/uploadRecordImages',      //洗车工提交上传图片
     basePicUpload: BASEURL + 'Common/basePicUpload',      //洗车工上传图片 base 64
+    getClearRecordList: BASEURL + 'clear_record/getClearRecordList',      //洗车记录页-获取30天洗车记录
+    getClearRecordDetail: BASEURL + 'clear_record/getClearRecordDetail',      //洗车记录页-洗车记录详情
+    setStarLevel: BASEURL + 'clear_record/setStarLevel',      //洗车记录页-评价
+    addFeedback: BASEURL + 'Client/addFeedback',      //意见反馈
 
 }
 

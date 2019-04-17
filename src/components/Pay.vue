@@ -212,7 +212,7 @@ import wx from 'weixin-js-sdk'
         height:3.2rem;
         background:rgba(50,119,216,1);
         border-radius:0.4rem;
-        margin: 0 auto;
+        margin: 0 auto 2rem;
         display: block;
         line-height: 0;
     }

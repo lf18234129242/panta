@@ -70,9 +70,12 @@ import mdFive from '@/md5.js'
                 img_before_disabled:true,
                 img_after_disabled:true,
                 id:'',      //上传图片所需 id
+                active:'',      //上个页面跳转过来时的tab 数字
             }
         },
         mounted(){
+            this.active = this.$route.query.active;
+            localStorage.setItem('active',this.active)
             this.axios.post(url.getRecord,{
                 access_token:this.access_token,
                 user_token:localStorage.getItem('user_token'),

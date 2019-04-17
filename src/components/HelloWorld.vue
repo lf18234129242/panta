@@ -4,7 +4,12 @@
       :headerImg="headerImg"
       descriptionTitle="个人中心"
     ></page-header>
-    <div class="cars-box" v-for="(item, index) in carsInfo" :key="item.index">
+    <div
+      class="cars-box"
+      v-for="(item, index) in carsInfo"
+      :key="item.index"
+      @click="to_washer_record"
+    >
       <shadow-box>
         <div class="top">
           <li class="car"><img src="./../assets/img/car-green.png" alt=""></li>
@@ -43,7 +48,7 @@
             <span>服务到期时间:</span>
             <p>{{item.over_time}}</p>
           </li>
-          <van-button type="info" size="small" @click="renewalFee(index)">续费</van-button>
+          <van-button type="info" size="small" @click.stop="renewalFee(index)">续费</van-button>
         </div>
       </shadow-box>
     </div>
@@ -130,6 +135,12 @@ export default {
     })
   },
   methods: {
+    //跳转到洗车记录页
+    to_washer_record(){
+      this.$router.push({
+        path:'/washer-record'
+      })
+    },
     //获取用户 姓名、手机号
     getClientInfo(){
         let openid = localStorage.getItem('openid')
@@ -217,7 +228,7 @@ export default {
     // 续费
     renewalFee(index){
       this.$router.push({
-        path:'/pay',
+        path:'./pay',
         query:{
           car_id:this.carsInfo[index].cid
         }

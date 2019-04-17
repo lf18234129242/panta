@@ -13,7 +13,8 @@
                         path:'./carWasher-recording',
                         query:{
                             task_id:item_.task_id,
-                            plate_number:item_.plate_number
+                            plate_number:item_.plate_number,
+                            active:active
                         }
                     }">
                         <shadow-box>
@@ -53,17 +54,17 @@ import mdFive from '@/md5.js'
                     {taskList_:[]},
                     {taskList_:[]},
                 ],
-                active:'',
+                active:1,
                 title:['全部','未完成','已完成'],
             }
         },
         mounted(){
+            this.active = localStorage.getItem('active') ? localStorage.getItem('active') : this.active;
             // 验证登录
             this.user_token = localStorage.getItem('user_token');
             if(!this.user_token && this.user_token !== undefined){
                 this.$router.push('./CarWasher-login')
             }
-            this.active = 1;
             this.getTaskList_2();
         },
         watch:{
