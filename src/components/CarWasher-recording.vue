@@ -1,11 +1,11 @@
 <template>
     <div class="carWasher-recording">
-        <h2>{{plate_number}}</h2>
+        <h2>{{plate_number}}{{active_}}</h2>
         <van-tabs
             type="card"
             animated
             swipeable
-            v-model="active"
+            v-model="active_"
             @click="onClickTab"
         >
             <van-tab title="洗车前">
@@ -60,7 +60,7 @@ import mdFive from '@/md5.js'
                 warsher_after:'',
                 access_token : this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key),
                 img_arr_box:[],
-                active:'',
+                active_:'',
                 img_name:'',
                 img_path:'',
                 disabled_1:false,
@@ -71,6 +71,8 @@ import mdFive from '@/md5.js'
                 img_after_disabled:true,
                 id:'',      //上传图片所需 id
                 active:'',      //上个页面跳转过来时的tab 数字
+                instance_before:'',
+                instance_after:'',
             }
         },
         mounted(){
@@ -101,23 +103,31 @@ import mdFive from '@/md5.js'
                 console.log(err)
             })
         },
+        beforeRouteLeave(to,from,next){
+            if(this.active_ == 0){
+                this.instance_before.close();
+            }else{
+                this.instance_after.close();
+            }
+            next();
+        },
         methods: {
             //查看图片
             show_before_img(){
-                ImagePreview([
-                    this.warsher_brfore
-                ]);
+                this.instance_before = ImagePreview({
+                    images: [this.warsher_brfore],
+                });
             },
             show_after_img(){
-                ImagePreview([
-                    this.warsher_after
-                ]);
+                this.instance_after = ImagePreview({
+                    images: [this.warsher_after],
+                });
             },
             onClickTab(index, title) {
                 if(index == 0){
-                    this.active == 0
+                    this.active_ == 0
                 }else if(index == 1){
-                    this.active == 1
+                    this.active_ == 1
                 }
             },
             // 提交图片
