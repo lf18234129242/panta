@@ -81,15 +81,12 @@ import { Toast, ImagePreview} from 'vant';
                 console.log(err)
             })
         },
-        beforeRouteLeave(to,from,next){
+        destroyed(){
             if(this.active == 0){
                 this.instance_before.close();
             }else if(this.active == 1){
                 this.instance_after.close();
-            }else{
-                return;
             }
-            next();
         },
         methods: {
             //查看图片

@@ -20,7 +20,7 @@
             v-if="item.fixed == 2"
             type="info"
             size="normal"
-            @click="checkIn(index)"
+            @click.stop="checkIn(index)"
           >停车签到</van-button>
           <li
             v-else
@@ -241,17 +241,21 @@ export default {
     },
     // 提交停车签到信息
     onConfirm(){
-      this.show = false
-      this.axios.post(url.parkingSign,{
-        access_token:this.access_token,
-        id:this.id,
-        parking:this.carAddressDr
-      }).then(res => {
-        console.log(res)
-        Toast(`提交成功！`)
-      }).catch(err => {
-        console.log(err)
-      })
+      if(!this.carAddressDr){
+        Toast('请描述您的车辆所在位置！')
+      }else{
+        this.show = false
+        this.axios.post(url.parkingSign,{
+          access_token:this.access_token,
+          id:this.id,
+          parking:this.carAddressDr
+        }).then(res => {
+          console.log(res)
+          Toast(`提交成功！`)
+        }).catch(err => {
+          console.log(err)
+        })
+      }
     },
     onCancel(){
       this.show = false;

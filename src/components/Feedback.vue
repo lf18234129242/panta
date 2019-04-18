@@ -25,19 +25,23 @@ import {Toast} from 'vant'
         },
         methods: {
             submit_feedback() {
-                this.disabled_button = true;
-                this.axios.post(url.addFeedback,{
-                    access_token:this.access_token,
-                    content:this.textarea_value
-                }).then(res => {
-                    console.log(res)
-                    if(res.data.code == 0){
-                        Toast(`提交成功！`)
-                        this.$router.go(-1)
-                    }
-                }).catch(err => {
-                    console.log(err)
-                })
+                if(!this.textarea_value){
+                    Toast('请输入您想反馈的内容！')
+                }else{
+                    this.disabled_button = true;
+                    this.axios.post(url.addFeedback,{
+                        access_token:this.access_token,
+                        content:this.textarea_value
+                    }).then(res => {
+                        console.log(res)
+                        if(res.data.code == 0){
+                            Toast(`提交成功！`)
+                            this.$router.go(-1)
+                        }
+                    }).catch(err => {
+                        console.log(err)
+                    })
+                }
             }
         },
     }
