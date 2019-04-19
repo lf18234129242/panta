@@ -35,12 +35,15 @@ import {Toast} from 'vant'
         data() {
             return {
                 recordList:[],
+                car_id:'',
                 access_token : this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key),
             }
         },
         mounted(){
+            this.car_id = this.$route.query.car_id
             this.axios.post(url.getClearRecordList,{
-                access_token:this.access_token
+                access_token:this.access_token,
+                car_id:this.car_id,
             }).then(res => {
                 console.log(res)
                 if(res.data.code == 0){

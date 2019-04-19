@@ -5,7 +5,7 @@
         </van-nav-bar>
 
         <header>
-            <li><img :src="head_imgurl" alt=""></li>
+            <li><img src="./../assets/img/car-red.jpg" alt=""></li>
             <li>
                 <h2>{{nickname}}</h2>
                 <h3>{{r_name}}</h3>
@@ -52,7 +52,6 @@ import { Toast, ImagePreview} from 'vant';
                 rate_num:0,    //评价几颗星
                 nickname:'',    //洗车工名称
                 r_name:'',    //小区地址
-                head_imgurl:'',    //洗车工头像
                 disabled_button:false,
                 is_show_rate:true,
                 access_token : this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key),

@@ -8,7 +8,7 @@
       class="cars-box"
       v-for="(item, index) in carsInfo"
       :key="item.index"
-      @click="to_washer_record"
+      @click="to_washer_record(index)"
     >
       <shadow-box>
         <div class="top">
@@ -136,9 +136,12 @@ export default {
   },
   methods: {
     //跳转到洗车记录页
-    to_washer_record(){
+    to_washer_record(index){
       this.$router.push({
-        path:'/washer-record'
+        path:'/washer-record',
+        query:{
+          car_id:this.carsInfo[index].cid
+        }
       })
     },
     //获取用户 姓名、手机号

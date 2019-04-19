@@ -19,7 +19,8 @@ export default new Router({
       meta:{
         index:2,
         auth:true,
-        title:'用户中心'
+        title:'用户中心',
+        scrollToTop:true,
       }
     },
     {
@@ -29,7 +30,8 @@ export default new Router({
       meta:{
         index:3,
         auth:true,
-        title:'绑定车辆信息'
+        title:'绑定车辆信息',
+        scrollToTop:true,
       }
     },
     {
@@ -39,7 +41,8 @@ export default new Router({
       meta:{
         index:4,
         auth:true,
-        title:'支付'
+        title:'支付',
+        scrollToTop:true,
       }
     },
     {
@@ -49,7 +52,8 @@ export default new Router({
       meta:{
         index:4,
         auth:true,
-        title:'评价打分'
+        title:'评价打分',
+        scrollToTop:true,
       }
     },
     {
@@ -59,7 +63,8 @@ export default new Router({
       meta:{
         index:3,
         auth:true,
-        title:'洗车记录'
+        title:'洗车记录',
+        scrollToTop:true,
       }
     },
     {
@@ -69,7 +74,8 @@ export default new Router({
       meta:{
         index:5,
         auth:true,
-        title:'反馈建议'
+        title:'反馈建议',
+        scrollToTop:true,
       }
     },
     {
@@ -79,7 +85,8 @@ export default new Router({
       meta:{
         index:1,
         auth:true,
-        title:'正在登录'
+        title:'正在登录',
+        scrollToTop:true,
       }
     },
     {
@@ -89,7 +96,8 @@ export default new Router({
       meta:{
         index:1,
         auth:true,
-        title:'登录'
+        title:'登录',
+        scrollToTop:true,
       }
     },
     {
@@ -99,7 +107,8 @@ export default new Router({
       meta:{
         index:2,
         auth:true,
-        title:'操作后台'
+        title:'操作后台',
+        scrollToTop:false,
       }
     },
     {
@@ -109,7 +118,8 @@ export default new Router({
       meta:{
         index:3,
         auth:true,
-        title:'洗车记录'
+        title:'洗车记录',
+        scrollToTop:true,
       }
     },
   ]
