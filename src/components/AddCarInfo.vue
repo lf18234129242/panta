@@ -11,6 +11,7 @@
                 label="姓名"
                 left-icon="contact"
                 @focus="hideKeyboard"
+                @blur="onBlur"
             />
             <div class="input-box" @click="clickShowKeyboard">
                 <li>{{first}}</li>
@@ -39,6 +40,7 @@
                 left-icon="flag-o"
                 :disabled="parkingIsDisabled"
                 @focus="hideKeyboard"
+                @blur="onBlur"
             />
             <van-field
                 v-model="village_name"
@@ -117,6 +119,9 @@
                     </div>
                 </div>
             </van-popup>
+        </div>
+        <div class="loading-box" v-if="isShowLoading">
+            <van-loading/>
         </div>
     </div>
 </template>
@@ -221,18 +226,21 @@ import {Toast} from 'vant'
                 ],
                 first:'',           //车牌号首位汉字
                 numArr:[],          //车牌号
+                isShowLoading:true
             }
         },
         created(){
             let openid = localStorage.getItem('openid')
             if(openid && openid !== 'undefined'){
                 //如果有 openid ，获取用户 姓名，手机号
+                this.isShowLoading = false;
                 this.getClientInfo()
             }else{
                 localStorage.setItem('openid',this.$route.query.openid)
                 let openid = localStorage.getItem('openid')
                 if(openid && openid !== 'undefined'){
                     //如果有 openid ，获取用户 姓名，手机号
+                    this.isShowLoading = false;
                     this.getClientInfo()
                 }else{
                     // 授权第一步
@@ -247,12 +255,17 @@ import {Toast} from 'vant'
                 if(res.data.code == 0){
                     // 将后台传过来的 json 数组里面的 name 换成 text
                     this.columns = JSON.parse(JSON.stringify(res.data.data.data).replace(/r_name/g,'text'))
+                }else if(res.data.code == 1020009){
+                    this.getSelfInfo()
                 }
             }).catch(err => {
                 console.log(err)
             })
         },
         methods: {
+            onBlur(){
+                document.body.scrollTop = document.body.scrollTop;
+            },
             // 当其他input 聚焦的时候，收起虚拟键盘
             hideKeyboard(){
                 this.show_chinese = false;
@@ -288,6 +301,7 @@ import {Toast} from 'vant'
                         return false;
                     // 静默授权，获取微信名 头像 openid id
                     }else if(res.data.code == 0){
+                        this.isShowLoading = false;
                         this.car_owner = res.data.data.username
                         localStorage.setItem('openid',res.data.data.openid)
                         localStorage.setItem('id',res.data.data.id)

@@ -42,7 +42,7 @@
 <script>
 import url from '@/serviceAPI.config.js'
 import mdFive from '@/md5.js'
-import { Toast, ImagePreview} from 'vant';
+import { Toast, ImagePreview} from 'vant'
     export default {
         data() {
             return {
@@ -105,7 +105,7 @@ import { Toast, ImagePreview} from 'vant';
                     images: [this.warsher_after_img],
                 });
             },
-            onClickRight() {
+            onClickRight(){
                 this.$router.push('/feedback')
             },
             submit_rate(){

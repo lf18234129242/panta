@@ -75,6 +75,10 @@
         v-model="carAddressDr"
       ></textarea>
     </van-dialog>
+
+    <div class="loading-box" v-if="isShowLoading">
+        <van-loading/>
+    </div>
   </div>
 </template>
 
@@ -98,6 +102,7 @@ export default {
       carAddressDr:'',    //如果没有车位号，填写的车辆所在位置
       show:false,
       id:'',    //车辆 id
+      isShowLoading:true,
     }
   },
   created(){
@@ -105,12 +110,14 @@ export default {
     if(openid && openid !== 'undefined'){
       console.log(102)
       //如果有 openid ，获取用户 姓名，手机号
+      this.isShowLoading = false;
       this.getClientInfo()
     }else{
       console.log(106)
       localStorage.setItem('openid',this.$route.query.openid)
       let openid = localStorage.getItem('openid')
       if(openid && openid !== 'undefined'){
+      this.isShowLoading = false;
       console.log(110)
         //如果有 openid ，获取用户 姓名，手机号
         this.getClientInfo()
@@ -129,6 +136,8 @@ export default {
       console.log(res)
       if(res.data.code == 0){
         this.carsInfo = res.data.data;
+      }else if(res.data.code == 1020009){
+        this.getSelfInfo()
       }
     }).catch(err => {
       console.log(err)
@@ -182,6 +191,7 @@ export default {
                 return false;
             // 静默授权，获取微信名 头像 openid id
             }else if(res.data.code == 0){
+                this.isShowLoading = false;
                 this.car_owner = res.data.data.username
                 localStorage.setItem('openid',res.data.data.openid)
                 localStorage.setItem('id',res.data.data.id)
