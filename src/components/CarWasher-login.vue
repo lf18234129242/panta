@@ -58,7 +58,7 @@ import mdFive from '@/md5.js'
                     }).then(res => {
                         console.log(res)
                         if(res.data.code == 0){
-                            this.$router.replace('./carWasher-admin')
+                            this.$router.replace({path:'./carWasher-admin',query:{user_token:res.data.data.user_token}})
                             // this.$router.go(-1)
                             localStorage.setItem('user_token',res.data.data.user_token)
                             this.carWasher_account = '';

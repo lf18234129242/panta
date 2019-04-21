@@ -235,6 +235,7 @@ import {Toast} from 'vant'
                 //如果有 openid ，获取用户 姓名，手机号
                 this.isShowLoading = false;
                 this.getClientInfo()
+                return;
             }else{
                 localStorage.setItem('openid',this.$route.query.openid)
                 let openid = localStorage.getItem('openid')
@@ -275,20 +276,18 @@ import {Toast} from 'vant'
             //获取用户 姓名、手机号
             getClientInfo(){
                 let openid = localStorage.getItem('openid')
-                if(!localStorage.getItem('username')){
-                    this.axios.post(url.getClientInfo,{
-                        access_token:this.access_token,
-                        openid:openid
-                    }).then(res => {
-                        console.log(res)
-                        this.car_owner = res.data.data.username
-                        localStorage.setItem('id',res.data.data.id)
-                        localStorage.setItem('wx_headimgurl',res.data.data.wx_headimgurl)
-                        localStorage.setItem('username',res.data.data.username)
-                    }).catch(err => {
-                        console.log(err)
-                    })
-                }
+                this.axios.post(url.getClientInfo,{
+                    access_token:this.access_token,
+                    openid:openid
+                }).then(res => {
+                    console.log(res)
+                    this.car_owner = res.data.data.username
+                    localStorage.setItem('id',res.data.data.id)
+                    localStorage.setItem('wx_headimgurl',res.data.data.wx_headimgurl)
+                    localStorage.setItem('username',res.data.data.username)
+                }).catch(err => {
+                    console.log(err)
+                })
             },
             //  getSelfInfo   授权第一步
             getSelfInfo(){

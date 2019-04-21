@@ -67,11 +67,13 @@ import mdFive from '@/md5.js'
             }
         },
         mounted(){
+            console.log('mounted')
             this.active = localStorage.getItem('active') ? localStorage.getItem('active') : this.active;
+            
             // 验证登录
-            this.user_token = localStorage.getItem('user_token');
+            this.user_token = localStorage.getItem('user_token') ? localStorage.getItem('user_token') : this.$route.query.user_token;
 
-            if(!this.user_token && this.user_token !== undefined){
+            if(!this.user_token || this.user_token == undefined){
                 this.$router.push('./CarWasher-login')
             }
             if(this.active == 0){
@@ -81,6 +83,10 @@ import mdFive from '@/md5.js'
             }else if(this.active == 2){
                 this.getTaskList_3();
             }
+
+            this.$nextTick(()=>{
+                window.scrollTo(0,30)
+            })
         },
         methods: {
             onClickTab(index, title) {
@@ -109,6 +115,7 @@ import mdFive from '@/md5.js'
                 })
             },
             getTaskList_2(){
+                console.log(this.user_token)
                 this.axios.post(url.getTaskList,{
                     user_token:this.user_token,
                     access_token:this.access_token,
