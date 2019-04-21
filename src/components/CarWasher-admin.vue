@@ -1,5 +1,5 @@
 <template>
-    <div class="carWasher-admin">
+    <div class="carWasher-admin" ref="car_washer_admin">
         <van-tabs
             type="card"
             @click="onClickTab"
@@ -9,13 +9,16 @@
         >
             <div class="kong"></div>
             <van-tab :title="title[index]"  v-for="(item,index) in taskList" :key="index">
-                <div v-for="(item_,index_) in item.taskList_" :key="index_">
+                <div
+                    v-for="(item_,index_) in item.taskList_" 
+                    :key="index_" 
+                >
                     <router-link :to="{
                         path:'./carWasher-recording',
                         query:{
                             task_id:item_.task_id,
                             plate_number:item_.plate_number,
-                            active:active
+                            active:active,
                         }
                     }">
                         <shadow-box>
@@ -58,6 +61,8 @@ import mdFive from '@/md5.js'
                     {taskList_:[]},
                 ],
                 active:1,
+                offsetTop_num:0,
+                index_dom:0,
                 title:['全部','未完成','已完成'],
             }
         },
@@ -65,30 +70,29 @@ import mdFive from '@/md5.js'
             this.active = localStorage.getItem('active') ? localStorage.getItem('active') : this.active;
             // 验证登录
             this.user_token = localStorage.getItem('user_token');
+
             if(!this.user_token && this.user_token !== undefined){
                 this.$router.push('./CarWasher-login')
             }
-            this.getTaskList_2();
-        },
-        watch:{
-            active(){
-                if(this.active == 0){
-                    this.getTaskList_1();
-                }else if(this.active == 1){
-                    this.getTaskList_2();
-                }else if(this.active == 2){
-                    this.getTaskList_3();
-                }
+            if(this.active == 0){
+                this.getTaskList_1();
+            }else if(this.active == 1){
+                this.getTaskList_2();
+            }else if(this.active == 2){
+                this.getTaskList_3();
             }
         },
         methods: {
             onClickTab(index, title) {
                 if(index == 0){
                     this.active == 0
+                    this.getTaskList_1();
                 }else if(index == 1){
                     this.active == 1
+                    this.getTaskList_2();
                 }else if(index == 2){
                     this.active == 2
+                    this.getTaskList_3();
                 }
             },
             getTaskList_1(){

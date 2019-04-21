@@ -9,18 +9,21 @@
                 v-for="(item,index) in packageList" 
                 :key="index"
                 :class="['package', radio == index ? 'borderBlue' : 'borderEEE']" 
-                @click="radio = index"
+                @click="checkRadio(index)"
             >
                 <div class="top">
                     <li class="img">
                         <img src="./../assets/img/car-green.png" alt="">
                     </li>
                     <li class="center">
-                        <span>{{item.package_name}} {{item.rest_cnt ? `剩余${item.rest_cnt}份` : ''}}</span>
+                        <span>
+                            {{item.package_name}}
+                            <em v-if="item.rest_cnt || item.rest_cnt == 0">剩余<i :class="[item.rest_cnt == 0 ? 'red-color' : '']">{{item.rest_cnt}}</i>份</em>
+                        </span>
                         <p>{{item.package_title}}</p>
                     </li>
                     <li class="radio">
-                        <van-radio :name="index"></van-radio>
+                        <van-radio :name="index" :disabled="item.rest_cnt == 0" @click="checkRadio(index)"></van-radio>
                     </li>
                 </div>
                 <div class="bottom">
@@ -65,12 +68,26 @@ import wx from 'weixin-js-sdk'
                 console.log(res)
                 if(res.data.code == 0){
                     this.packageList = res.data.data;
+                    if(this.packageList[0].rest_cnt == 0){
+                        this.radio = 1;
+                    }
                 }
             }).catch(err => {
                 console.log(err)
             })
         },
         methods: {
+            // 选择套餐
+            checkRadio(index){
+                if(index == 0){
+                    if(this.packageList[0].rest_cnt == 0){
+                        // this.radio = 1;
+                        Toast('体验卡已被抢购一空，请选择其他套餐！')
+                    }
+                }else{
+                    this.radio = index;
+                }
+            },
             // 下单
             wechatPay(){
                 this.wechatPay_button = true;
@@ -188,6 +205,13 @@ import wx from 'weixin-js-sdk'
                     height: 1.733rem;
                     line-height: 1.733rem;
                     margin-bottom: .4rem;
+                }
+                i{
+                    font-size: .867rem;
+                    line-height: 1.733rem;
+                }
+                .red-color{
+                    color: red;
                 }
                 p{
                     font-size: 1.667rem;

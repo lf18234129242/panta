@@ -33,11 +33,13 @@ router.beforeEach((to,from,next)=>{
   if (to.meta.title) {
     document.title = to.meta.title
   }
-
+  //记录滚动位置
   // if(from.meta.scrollToTop==false) {
   //     sessionStorage.setItem('recordScrollTop',window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop)
     
-  //   console.log(window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop)
+  //   console.log(window.pageYOffset)
+  //   console.log(document.documentElement.scrollTop)
+  //   console.log(document.body.scrollTop)
   // }
   next()
 })
@@ -50,9 +52,11 @@ router.afterEach((to, from) => {
   //     document.body.scrollTop = 0
   //   },10)
   // }else{
+  //   // 读取滚动位置并赋值
   //   setTimeout(()=>{
-  //     console.log(sessionStorage.getItem('recordScrollTop'))
-  //     document.body.scrollTop = sessionStorage.getItem('recordScrollTop')
+  //     let scrollTop_num = Number(sessionStorage.getItem('recordScrollTop'))
+  //     console.log(scrollTop_num)
+  //     document.documentElement.scrollTop = scrollTop_num;
   //   },50)
   // }
 });

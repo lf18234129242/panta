@@ -1,9 +1,9 @@
 <template>
-  <div id="app">
+  <div id="app" ref="app">
     <transition :name="transitionName">
-      <keep-alive include="carWasher-admin">
+      <!-- <keep-alive include="carWasher-admin"> -->
         <router-view/>
-      </keep-alive>
+      <!-- </keep-alive> -->
     </transition>
   </div>
 </template>
@@ -32,12 +32,12 @@ export default {
 <style>
 @import url(./assets/css/base.css);
 html,body,#app {
-  position: fixed;
+  /* position: fixed; */
   width: 100%;
-  height: 100%;
+  /* height: 100%; */
   margin: 0;
   padding: 0;
-  overflow: auto;
+  /* overflow: scroll; */
 }
 
 .fold-left-enter-active {

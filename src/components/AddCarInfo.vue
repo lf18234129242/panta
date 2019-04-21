@@ -252,6 +252,7 @@ import {Toast} from 'vant'
             this.axios.post(url.getVillageList,{
                 access_token:this.access_token
             }).then(res => {
+                console.log(res)
                 if(res.data.code == 0){
                     // 将后台传过来的 json 数组里面的 name 换成 text
                     this.columns = JSON.parse(JSON.stringify(res.data.data.data).replace(/r_name/g,'text'))
