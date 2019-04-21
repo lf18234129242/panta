@@ -110,6 +110,7 @@ import mdFive from '@/md5.js'
             })
         },
         destroyed(){
+            console.log(this.instance_before)
             if(this.active_ == 0 && this.instance_before){
                 this.instance_before.close();
             }else if(this.active_ == 1 && this.instance_after){
@@ -193,6 +194,8 @@ import mdFive from '@/md5.js'
                     console.log(res)
                     if(res.data.code == 0){
                         Toast(`上传图片成功!`)
+                        this.$router.replace('/carWasher-admin')
+                        this.$router.go(-1)
                     }
                 }).catch(err => {
                     console.log(err)

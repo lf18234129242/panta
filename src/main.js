@@ -35,27 +35,27 @@ router.beforeEach((to,from,next)=>{
   }
 
   // if(from.meta.scrollToTop==false) {
-  //   sessionStorage.setItem('recordScrollTop',window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop)
+  //     sessionStorage.setItem('recordScrollTop',window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop)
+    
   //   console.log(window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop)
-  //   console.log(container.scrollHeight)
   // }
   next()
 })
 
-// router.afterEach((to, from) => {
-//   // 如果进入后的页面是要滚动到顶部，则设置scrollTop = 0
-//   //否则从vuex中读取上次离开本页面记住的高度，恢复它
-//   if(to.meta.scrollToTop==true){
-//     setTimeout(()=>{
-//       document.body.scrollTop = 0
-//     },10)
-//   }else{
-//     setTimeout(()=>{
-//       console.log(sessionStorage.getItem('recordScrollTop'))
-//       document.body.scrollTop = sessionStorage.getItem('recordScrollTop')
-//     },50)
-//   }
-// });
+router.afterEach((to, from) => {
+  // 如果进入后的页面是要滚动到顶部，则设置scrollTop = 0
+  //否则从sessionStorage中读取上次离开本页面记住的高度，恢复它
+  // if(to.meta.scrollToTop==true){
+  //   setTimeout(()=>{
+  //     document.body.scrollTop = 0
+  //   },10)
+  // }else{
+  //   setTimeout(()=>{
+  //     console.log(sessionStorage.getItem('recordScrollTop'))
+  //     document.body.scrollTop = sessionStorage.getItem('recordScrollTop')
+  //   },50)
+  // }
+});
 
 /* eslint-disable no-new */
 new Vue({
