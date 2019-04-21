@@ -154,7 +154,7 @@ import wx from 'weixin-js-sdk'
     }
     .package{
         width:24.333rem;
-        height:11.667rem;
+        // height:11.667rem;
         background:rgba(255,255,255,1);
         box-shadow:0px 4px 8px 0px rgba(0,0,0,0.04);
         border-radius:.533rem;
@@ -200,7 +200,7 @@ import wx from 'weixin-js-sdk'
             }
         }
         .bottom{
-            height: 1.2rem;
+            // height: 1.2rem;
             font-size: .867rem;
             color: #888888;
             margin-top: 1rem;

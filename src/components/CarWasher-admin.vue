@@ -7,6 +7,7 @@
             swipeable
             v-model="active"
         >
+            <div class="kong"></div>
             <van-tab :title="title[index]"  v-for="(item,index) in taskList" :key="index">
                 <div v-for="(item_,index_) in item.taskList_" :key="index_">
                     <router-link :to="{
@@ -45,8 +46,10 @@ import { Toast } from 'vant';
 import url from '@/serviceAPI.config.js'
 import mdFive from '@/md5.js'
     export default {
+        name:"carWasher-admin",
         data() {
             return {
+                includedComponents:"carWasher-admin",
                 access_token : this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key),
                 user_token:'',
                 taskList:[
@@ -135,8 +138,11 @@ import mdFive from '@/md5.js'
 .carWasher-admin{
     width: 100%;
     position: absolute;
+    .kong{
+        margin-top: 2.933rem;
+    }
     .ShadowBox{
-        margin-top: 1.733rem;
+        margin-top: 1.5rem;
         .top{
             width: 100%;
             height: 4.5rem;
@@ -198,6 +204,7 @@ import mdFive from '@/md5.js'
 <style lang="scss">
 .carWasher-admin{
     .van-tabs--card>.van-tabs__wrap{
+        position: fixed;
         height: 2.933rem;
     }
     .van-tabs__nav--card{

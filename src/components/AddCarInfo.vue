@@ -388,11 +388,11 @@ import {Toast} from 'vant'
                 this.parkingPlaceholder = '请输入车位号码'
             },
             changeDisabledToFalse() {
-                this.fixed = 2;
-                this.isDisabled = false;
-                this.parkingIsDisabled = true;
-                this.parkingPlaceholder = '无固定车位无需填写'
-                this.parking = ''
+                // this.fixed = 2;
+                // this.isDisabled = false;
+                // this.parkingIsDisabled = true;
+                // this.parkingPlaceholder = '无固定车位无需填写'
+                // this.parking = ''
             },
             // 选择小区
             checkVillage(){

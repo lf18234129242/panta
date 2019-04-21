@@ -9,13 +9,16 @@
             @click="onClickTab"
         >
             <van-tab title="洗车前">
-                <van-uploader :after-read="onRead_berfore" v-if="img_before_disabled">
-                    <div class="img-box">
-                        <img :src="warsher_brfore" alt="">
+                <van-uploader :after-read="onRead_before" v-if="img_before_disabled">
+                    <div class="img-box pr">
+                        <img :src="warsher_before" alt="">
+                        <div class="Circle" v-if="isShow_loading_before">
+                            <van-loading color="white" />
+                        </div>
                     </div>
                 </van-uploader>
                 <div class="img-box" v-else-if="!img_before_disabled" @click.stop="show_before_img">
-                    <img :src="warsher_brfore" alt="">
+                    <img :src="warsher_before" alt="">
                 </div>
                 <van-button
                     type="info"
@@ -27,8 +30,11 @@
             </van-tab>
             <van-tab title="洗车后">
                 <van-uploader :after-read="onRead_after" v-if="img_after_disabled">
-                    <div class="img-box">
+                    <div class="img-box pr">
                         <img :src="warsher_after" alt="">
+                        <div class="Circle" v-if="isShow_loading_after">
+                            <van-loading color="white" />
+                        </div>
                     </div>
                 </van-uploader>
                 <div class="img-box" v-else-if="!img_after_disabled" @click.stop="show_after_img">
@@ -43,8 +49,6 @@
                 >提交</van-button>
             </van-tab>
         </van-tabs>
-        
-
     </div>
 </template>
 
@@ -56,10 +60,11 @@ import mdFive from '@/md5.js'
         data() {
             return {
                 plate_number: this.$route.query.plate_number,
-                warsher_brfore:'',
+                warsher_before:'',
                 warsher_after:'',
                 access_token : this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key),
-                img_arr_box:[],
+                img_arr_box_before:[],
+                img_arr_box_after:[],
                 active_:'',
                 img_name:'',
                 img_path:'',
@@ -73,6 +78,8 @@ import mdFive from '@/md5.js'
                 active:'',      //上个页面跳转过来时的tab 数字
                 instance_before:'',
                 instance_after:'',
+                isShow_loading_before:false,     //是否显示图片上传loading
+                isShow_loading_after:false,     //是否显示图片上传loading
             }
         },
         mounted(){
@@ -86,11 +93,10 @@ import mdFive from '@/md5.js'
                 console.log(res)
                 if(res.data.code == 0){
                     this.id = res.data.data.id
-                    console.log(this.id)
-                    this.warsher_brfore = res.data.data.before_img.img_url
+                    this.warsher_before = res.data.data.before_img.img_url
                     this.warsher_after = res.data.data.after_img.img_url
                     // 如果获取到图片，禁用上传图片功能，隐藏提交 button
-                    if(this.warsher_brfore && this.warsher_brfore !== undefined){
+                    if(this.warsher_before && this.warsher_before !== undefined){
                         this.is_show_before_button = false;
                         this.img_before_disabled = false;
                     }
@@ -103,19 +109,18 @@ import mdFive from '@/md5.js'
                 console.log(err)
             })
         },
-        beforeRouteLeave(to,from,next){
-            if(this.active_ == 0){
+        destroyed(){
+            if(this.active_ == 0 && this.instance_before){
                 this.instance_before.close();
-            }else{
+            }else if(this.active_ == 1 && this.instance_after){
                 this.instance_after.close();
             }
-            next();
         },
         methods: {
             //查看图片
             show_before_img(){
                 this.instance_before = ImagePreview({
-                    images: [this.warsher_brfore],
+                    images: [this.warsher_before],
                 });
             },
             show_after_img(){
@@ -140,17 +145,19 @@ import mdFive from '@/md5.js'
                 this.submit_img_finally(2);
             },
             // 选择图片
-            onRead_berfore(file, detail) {
-                this.warsher_brfore = file.content;
-                this.img_arr_box.push(file.content)
-                this.basePicUpload(this.img_arr_box);
-                this.disabled_1 = false;
+            onRead_before(file, detail) {
+                this.isShow_loading_before = true;
+                this.warsher_before = file.content;
+                this.img_arr_box_before.push(file.content)
+                this.basePicUpload(this.img_arr_box_before);
+                this.disabled_1 = true;
             },
             onRead_after(file, detail){
+                this.isShow_loading_after = true;
                 this.warsher_after = file.content;
-                this.img_arr_box.push(file.content)
-                this.basePicUpload(this.img_arr_box);
-                this.disabled_2 = false;
+                this.img_arr_box_after.push(file.content)
+                this.basePicUpload(this.img_arr_box_after);
+                this.disabled_2 = true;
             },
             // 上传 base 64 图片
             basePicUpload(content){
@@ -160,9 +167,14 @@ import mdFive from '@/md5.js'
                 }).then(res => {
                     console.log(res)
                     if(res.data.code == 0){
+                        this.isShow_loading_before = false;
+                        this.isShow_loading_after = false;
                         this.img_name = res.data.data[0].real_img.file_name;
                         this.img_path = res.data.data[0].real_img.img_path;
-                        this.img_arr_box = []
+                        this.img_arr_box_before = []
+                        this.img_arr_box_after = []
+                        this.disabled_1 = false;
+                        this.disabled_2 = false;
                     }
                 }).catch(err => {
                     console.log(err)
@@ -222,6 +234,17 @@ import mdFive from '@/md5.js'
         img{
             width: 100%;
             height: 100%;
+        }
+        .Circle{
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
     }
     .van-button--large{
