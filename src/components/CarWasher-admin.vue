@@ -9,6 +9,8 @@
         >
             <div class="kong"></div>
             <van-tab :title="title[index]"  v-for="(item,index) in taskList" :key="index">
+            <!-- 下拉刷新 -->
+            <van-pull-refresh v-model="isLoading" @refresh="onRefresh">
                 <div
                     v-for="(item_,index_) in item.taskList_" 
                     :key="index_" 
@@ -39,6 +41,7 @@
                         </shadow-box>
                     </router-link>
                 </div>
+            </van-pull-refresh>
             </van-tab>
         </van-tabs>
     </div>
@@ -55,6 +58,7 @@ import mdFive from '@/md5.js'
                 includedComponents:"carWasher-admin",
                 access_token : this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key),
                 user_token:'',
+                reload:false,   //从登录页过来是否重新加载
                 taskList:[
                     {taskList_:[]},
                     {taskList_:[]},
@@ -64,41 +68,70 @@ import mdFive from '@/md5.js'
                 offsetTop_num:0,
                 index_dom:0,
                 title:['全部','未完成','已完成'],
+                isLoading: false,       //下拉刷新
             }
         },
-        mounted(){
-            console.log('mounted')
-            this.active = localStorage.getItem('active') ? localStorage.getItem('active') : this.active;
-            
-            // 验证登录
+        created(){
+            console.log('created')
+                // 验证登录
             this.user_token = localStorage.getItem('user_token') ? localStorage.getItem('user_token') : this.$route.query.user_token;
 
-            if(!this.user_token || this.user_token == undefined){
-                this.$router.push('./CarWasher-login')
-            }
+            this.active = sessionStorage.getItem('active') ? sessionStorage.getItem('active') : this.active;
+            
             if(this.active == 0){
+                    // alert(`mounted 82`)
                 this.getTaskList_1();
             }else if(this.active == 1){
+                    // alert(`mounted 85`)
                 this.getTaskList_2();
             }else if(this.active == 2){
+                    // alert(`mounted 88`)
                 this.getTaskList_3();
             }
-
-            this.$nextTick(()=>{
-                window.scrollTo(0,30)
-            })
         },
+        // watch:{
+        //     active(){
+        //         if(this.active == 0){
+        //             alert(`active 95`)
+        //             this.getTaskList_1();
+        //         }else if(this.active == 1){
+        //             alert(`active 98`)
+        //             this.getTaskList_2();
+        //         }else if(this.active == 2){
+        //             alert(`active 101`)
+        //             this.getTaskList_3();
+        //         }
+        //     },
+        // },
+        // destroyed(){
+        //     sessionStorage.removeItem('active')
+        // },
         methods: {
+            // 下拉刷新
+            onRefresh() {
+                setTimeout(() => {
+                    this.$toast('刷新成功');
+                    this.isLoading = false;
+                    if(this.active == 0){
+                        this.getTaskList_1();
+                    }else if(this.active == 1){
+                        this.getTaskList_2();
+                    }else if(this.active == 2){
+                        this.getTaskList_3();
+                    }
+                }, 500);
+            },
+
             onClickTab(index, title) {
                 if(index == 0){
                     this.active == 0
-                    this.getTaskList_1();
+                        this.getTaskList_1();
                 }else if(index == 1){
                     this.active == 1
-                    this.getTaskList_2();
+                        this.getTaskList_2();
                 }else if(index == 2){
                     this.active == 2
-                    this.getTaskList_3();
+                        this.getTaskList_3();
                 }
             },
             getTaskList_1(){
@@ -109,13 +142,13 @@ import mdFive from '@/md5.js'
                 }).then(res => {
                     if(res.data.code == 0){
                         this.taskList[0].taskList_ = res.data.data;
+                        console.log(this.taskList[0].taskList_)
                     }
                 }).catch(err => {
                     console.log(err)
                 })
             },
             getTaskList_2(){
-                console.log(this.user_token)
                 this.axios.post(url.getTaskList,{
                     user_token:this.user_token,
                     access_token:this.access_token,

@@ -5,7 +5,7 @@
         </van-nav-bar>
 
         <header>
-            <li><img src="./../assets/img/car-red.jpg" alt=""></li>
+            <li><img src="./../assets/img/logo.png" alt=""></li>
             <li>
                 <h2>{{nickname}}</h2>
                 <h3>{{r_name}}</h3>
@@ -174,7 +174,7 @@ import { Toast, ImagePreview} from 'vant'
         }
         .img-box{
             width: 23.667rem;
-            height: 12.267rem;
+            height: 23.667rem;
             margin: 0 auto 1rem;
             background: #D8D8D8 url('./../assets/img/img_.png') no-repeat center center;
             img{

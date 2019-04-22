@@ -1,9 +1,9 @@
 <template>
   <div id="app" ref="app">
     <transition :name="transitionName">
-      <!-- <keep-alive include="carWasher-admin"> -->
+      <keep-alive include="carWasher-admin">
         <router-view/>
-      <!-- </keep-alive> -->
+      </keep-alive>
     </transition>
   </div>
 </template>

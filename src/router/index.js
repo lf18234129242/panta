@@ -11,25 +11,27 @@ function loadView(view) {
 export default new Router({
   mode: 'history',
   base: 'view',
-  scrollBehavior (to, from, savedPosition) {
+  // scrollBehavior (to, from, savedPosition) {
     //判断如果滚动条的位置存在直接返回到当前位置，否者返回到起点
-    if (savedPosition) {
-      console.log(savedPosition)
-      return savedPosition
-    } else {
-      const position = {}
-      if (to.hash) {
-        position.selector = to.hash
-        console.log(to.hash)
-        // return {selector: to.hash}
-      }
-      if (to.matched.some(m => m.meta.scrollToTop)) {
-        position.x = 0
-        position.y = 0
-      }
-      return position
-    }
-  },
+    // if (savedPosition) {
+    //   console.log(savedPosition)
+    //   setTimeout(() => {
+    //     return savedPosition
+    //   }, 200);
+    // } else {
+    //   const position = {}
+    //   if (to.hash) {
+    //     position.selector = to.hash
+    //     console.log(to.hash)
+    //     // return {selector: to.hash}
+    //   }
+    //   if (to.matched.some(m => m.meta.scrollToTop)) {
+    //     position.x = 0
+    //     position.y = 0
+    //   }
+    //   return position
+    // }
+  // },
   routes: [
     {
       path: '/',

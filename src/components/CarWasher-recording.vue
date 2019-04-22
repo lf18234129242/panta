@@ -9,7 +9,10 @@
             @click="onClickTab"
         >
             <van-tab title="洗车前">
-                <van-uploader :after-read="onRead_before" v-if="img_before_disabled">
+                <van-uploader
+                    :after-read="onRead_before"
+                    v-if="img_before_disabled"
+                >
                     <div class="img-box pr">
                         <img :src="warsher_before" alt="">
                         <div class="Circle" v-if="isShow_loading_before">
@@ -26,10 +29,13 @@
                     :disabled = "disabled_1"
                     v-if="is_show_before_button"
                     @click="submit_img_before"
-                >提交</van-button>
+                >下一步</van-button>
             </van-tab>
             <van-tab title="洗车后">
-                <van-uploader :after-read="onRead_after" v-if="img_after_disabled">
+                <van-uploader
+                    :after-read="onRead_after"
+                    v-if="img_after_disabled"
+                >
                     <div class="img-box pr">
                         <img :src="warsher_after" alt="">
                         <div class="Circle" v-if="isShow_loading_after">
@@ -84,7 +90,7 @@ import mdFive from '@/md5.js'
         },
         mounted(){
             this.active = this.$route.query.active;
-            localStorage.setItem('active',this.active)
+            sessionStorage.setItem('active',this.active)
             this.axios.post(url.getRecord,{
                 access_token:this.access_token,
                 user_token:localStorage.getItem('user_token'),
@@ -110,7 +116,6 @@ import mdFive from '@/md5.js'
             })
         },
         destroyed(){
-            console.log(this.instance_before)
             if(this.active_ == 0 && this.instance_before){
                 this.instance_before.close();
             }else if(this.active_ == 1 && this.instance_after){
@@ -148,16 +153,62 @@ import mdFive from '@/md5.js'
             // 选择图片
             onRead_before(file, detail) {
                 this.isShow_loading_before = true;
-                this.warsher_before = file.content;
-                this.img_arr_box_before.push(file.content)
-                this.basePicUpload(this.img_arr_box_before);
+                // 大于1.5MB的jpeg和png图片都缩小像素上传
+                if(/\/(?:jpeg|png)/i.test(file.file.type)&&file.file.size>2000000) {
+                    // 创建Canvas对象(画布)
+                    let canvas =  document.createElement('canvas')  
+                    // 获取对应的CanvasRenderingContext2D对象(画笔)
+                    let context = canvas.getContext('2d') 
+                    // 创建新的图片对象 
+                    let img = new Image()
+                    // 指定图片的DataURL(图片的base64编码数据)
+                    img.src = file.content
+                    // 监听浏览器加载图片完成，然后进行进行绘制
+                    img.onload = () => {
+                        // 指定canvas画布大小，该大小为最后生成图片的大小
+                        canvas.width = 2000
+                        canvas.height = 2000
+                        /* drawImage画布绘制的方法。(0,0)表示以Canvas画布左上角为起点，
+                        600，600是将图片按给定的像素进行缩小。
+                        如果不指定缩小的像素图片将以图片原始大小进行绘制，
+                        图片像素如果大于画布将会从左上角开始按画布大小部分绘制图片，最后的图片就是张局部图。*/ 
+                        context.drawImage(img, 0, 0, 2000, 2000)
+                        // 将绘制完成的图片重新转化为base64编码，file.file.type为图片类型，0.92为默认压缩质量
+                        file.content = canvas.toDataURL(file.file.type, 0.95) 
+                        // 最后将base64编码的图片保存到数组中，留待上传。
+                        this.warsher_before = file.content;
+                        this.img_arr_box_before.push(file.content)
+                        this.basePicUpload(this.img_arr_box_before);
+                    }                       
+                }else{
+                    // 不做处理的jpg和png以及gif直接保存到数组
+                    this.warsher_before = file.content;
+                    this.img_arr_box_before.push(file.content)
+                    this.basePicUpload(this.img_arr_box_before);
+                }
                 this.disabled_1 = true;
             },
             onRead_after(file, detail){
                 this.isShow_loading_after = true;
-                this.warsher_after = file.content;
-                this.img_arr_box_after.push(file.content)
-                this.basePicUpload(this.img_arr_box_after);
+                if(/\/(?:jpeg|png)/i.test(file.file.type)&&file.file.size>2000000) {
+                    let canvas =  document.createElement('canvas')  
+                    let context = canvas.getContext('2d') 
+                    let img = new Image()
+                    img.src = file.content
+                    img.onload = () => {
+                        canvas.width = 2000
+                        canvas.height = 2000
+                        context.drawImage(img, 0, 0, 2000, 2000)
+                        file.content = canvas.toDataURL(file.file.type, 0.95) 
+                        this.warsher_after = file.content;
+                        this.img_arr_box_after.push(file.content)
+                        this.basePicUpload(this.img_arr_box_after);
+                    }                       
+                }else{
+                    this.warsher_after = file.content;
+                    this.img_arr_box_after.push(file.content)
+                    this.basePicUpload(this.img_arr_box_after);
+                }
                 this.disabled_2 = true;
             },
             // 上传 base 64 图片
@@ -194,8 +245,11 @@ import mdFive from '@/md5.js'
                     console.log(res)
                     if(res.data.code == 0){
                         Toast(`上传图片成功!`)
-                        this.$router.replace('/carWasher-admin')
-                        this.$router.go(-1)
+                        if(this.active_ == 0){
+                            this.active_ = 1;
+                        }else{
+                            this.$router.push('/carWasher-admin')
+                        }
                     }
                 }).catch(err => {
                     console.log(err)
@@ -231,7 +285,7 @@ import mdFive from '@/md5.js'
     }
     .img-box{
         width: 23.667rem;
-        height: 12.267rem;
+        height: 23.667rem;
         margin: 4rem auto 1rem;
         background: #D8D8D8 url('./../assets/img/img_.png') no-repeat center center;
         img{

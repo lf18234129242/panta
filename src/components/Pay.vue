@@ -83,6 +83,8 @@ import wx from 'weixin-js-sdk'
                     if(this.packageList[0].rest_cnt == 0){
                         // this.radio = 1;
                         Toast('体验卡已被抢购一空，请选择其他套餐！')
+                    }else{
+                        this.radio = index;
                     }
                 }else{
                     this.radio = index;

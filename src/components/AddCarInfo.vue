@@ -58,6 +58,7 @@
                     :columns="columns"
                     @confirm="onConfirm"
                     @cancel="onCancel"
+                    @change="onChange"
                 />
             </van-popup>
             
@@ -130,6 +131,32 @@
 import url from '@/serviceAPI.config.js'
 import mdFive from '@/md5.js'
 import {Toast} from 'vant'
+// const citys = {
+//     'parentValues':[{
+//         id:111,
+//         '浙江': {
+//             'values':[
+//                 {id:111,'name':'杭州'},
+//                 {id:222,'name':'宁波'},
+//                 {id:333,'name':'温州'},
+//                 {id:444,'name':'嘉兴'},
+//                 {id:555,'name':'湖州'},
+//             ]
+//         },
+//     }],
+//     'parentValues':[{
+//         id:222,
+//         '福建': {
+//             'values':[
+//                 {id:666,'name':'福州'},
+//                 {id:666,'name':'厦门'},
+//                 {id:666,'name':'莆田'},
+//                 {id:666,'name':'三明'},
+//                 {id:666,'name':'泉州'},
+//             ]
+//         }
+//     }],
+// };
     export default {
         data() {
             return {
@@ -145,6 +172,16 @@ import {Toast} from 'vant'
                 parkingIsDisabled:false,
                 parkingPlaceholder:'请输入车位号码',
                 show:false,
+                // columns___:[
+                //     {
+                //         values: Object.keys(citys),
+                //         className: 'column1'
+                //     },
+                //     {
+                //         values: citys['浙江'].values,
+                //         className: 'column2',
+                //     }
+                // ],
                 columns:[],
                 access_token : this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key),
                 // 虚拟键盘专用
@@ -265,6 +302,11 @@ import {Toast} from 'vant'
             })
         },
         methods: {
+            onChange(picker, values) {
+                console.log(picker)
+                console.log(values)
+                // picker.setColumnValues(1, citys[values[0]]);
+            },
             onBlur(){
                 document.body.scrollTop = document.body.scrollTop;
             },
