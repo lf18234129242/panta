@@ -60,6 +60,7 @@
                     @cancel="onCancel"
                     @change="onChange"
                 />
+                    <!-- value-key="name" -->
             </van-popup>
             
         </div>
@@ -131,35 +132,43 @@
 import url from '@/serviceAPI.config.js'
 import mdFive from '@/md5.js'
 import {Toast} from 'vant'
-// const citys = {
-//     'parentValues':[{
-//         id:111,
-//         '浙江': {
-//             'values':[
-//                 {id:111,'name':'杭州'},
-//                 {id:222,'name':'宁波'},
-//                 {id:333,'name':'温州'},
-//                 {id:444,'name':'嘉兴'},
-//                 {id:555,'name':'湖州'},
-//             ]
-//         },
-//     }],
-//     'parentValues':[{
-//         id:222,
-//         '福建': {
-//             'values':[
-//                 {id:666,'name':'福州'},
-//                 {id:666,'name':'厦门'},
-//                 {id:666,'name':'莆田'},
-//                 {id:666,'name':'三明'},
-//                 {id:666,'name':'泉州'},
-//             ]
-//         }
-//     }],
-// };
+// const citys = [
+//     {id:111,'name':'杭州'},
+//     {id:222,'name':'宁波'},
+//     {id:333,'name':'温州'},
+//     {id:444,'name':'嘉兴'},
+//     {id:555,'name':'湖州'},
+// ];
+// const country = {
+//     '杭州':[
+//         {id:111,'name':'国杭州'},
+//         {id:222,'name':'国宁波'},
+//         {id:333,'name':'国温州'},
+//         {id:444,'name':'国嘉兴'},
+//         {id:555,'name':'国湖州'},
+//     ],
+//     '宁波':[
+//         {id:111,'name':'中杭州'},
+//         {id:222,'name':'中宁波'},
+//         {id:333,'name':'中温州'},
+//         {id:444,'name':'中嘉兴'},
+//         {id:555,'name':'中湖州'},
+//     ]
+// }
     export default {
         data() {
             return {
+                columns___:[
+                    {
+                        values: citys,
+                        className: 'column1'
+                    },
+                    {
+                        values: country['杭州'],
+                        className: 'column2',
+                    }
+                ],
+                columns:[],
                 headerImg:require('./../assets/img/car-red.png'),
                 car_owner:localStorage.getItem('username'),
                 plate_number: '',   //车牌号
@@ -172,17 +181,6 @@ import {Toast} from 'vant'
                 parkingIsDisabled:false,
                 parkingPlaceholder:'请输入车位号码',
                 show:false,
-                // columns___:[
-                //     {
-                //         values: Object.keys(citys),
-                //         className: 'column1'
-                //     },
-                //     {
-                //         values: citys['浙江'].values,
-                //         className: 'column2',
-                //     }
-                // ],
-                columns:[],
                 access_token : this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key),
                 // 虚拟键盘专用
                 clickS: true,    //车牌号输入框是否聚焦(){},
@@ -305,7 +303,7 @@ import {Toast} from 'vant'
             onChange(picker, values) {
                 console.log(picker)
                 console.log(values)
-                // picker.setColumnValues(1, citys[values[0]]);
+                picker.setColumnValues(1, country[values[0].name]);
             },
             onBlur(){
                 document.body.scrollTop = document.body.scrollTop;
