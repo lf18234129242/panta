@@ -36,6 +36,10 @@
             :disabled = "disabled_button"
             @click="submit_rate"
         >提交评价</van-button>
+        
+        <div class="loading-box" v-if="isShowLoading">
+            <van-loading/>
+        </div>
     </div>
 </template>
 
@@ -57,7 +61,28 @@ import { Toast, ImagePreview} from 'vant'
                 access_token : this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key),
                 instance_before:'',
                 instance_after:'',
+                isShowLoading:true
             }
+        },
+        created(){
+            let openid = localStorage.getItem('openid')
+            if(openid && openid !== 'undefined'){
+                //如果有 openid ，获取用户 姓名，手机号
+                this.isShowLoading = false;
+                this.getClientInfo()
+                return;
+            }else{
+                localStorage.setItem('openid',this.$route.query.openid)
+                let openid = localStorage.getItem('openid')
+                if(openid && openid !== 'undefined'){
+                    //如果有 openid ，获取用户 姓名，手机号
+                    this.isShowLoading = false;
+                    this.getClientInfo()
+                }else{
+                    // 授权第一步
+                    this.getSelfInfo()
+                }
+            } 
         },
         mounted(){
             this.cr_id = this.$route.query.cr_id;
@@ -66,16 +91,20 @@ import { Toast, ImagePreview} from 'vant'
                 cr_id:this.cr_id
             }).then(res => {
                 console.log(res)
-                if(res.data.data.star_level){
-                    this.is_show_rate = false;
+                if(res.data.code == 0){
+                    if(res.data.data.star_level){
+                        this.is_show_rate = false;
+                    }else{
+                        this.is_show_rate = true;
+                    }
+                    this.nickname = res.data.data.nickname
+                    this.r_name = res.data.data.r_name
+                    this.warsher_before_img = res.data.data.before_img.img_url
+                    this.warsher_after_img = res.data.data.after_img.img_url
                 }else{
-                    this.is_show_rate = true;
+                    this.$router.replace('/')
+                    this.go(-1)
                 }
-                this.nickname = res.data.data.nickname
-                this.r_name = res.data.data.r_name
-                this.warsher_before_img = res.data.data.before_img.img_url
-                this.warsher_after_img = res.data.data.after_img.img_url
-
             }).catch(err => {
                 console.log(err)
             })
@@ -115,6 +144,75 @@ import { Toast, ImagePreview} from 'vant'
                     if(res.data.code == 0){
                         Toast('提交成功！')
                         this.is_show_rate = false;
+                    }
+                }).catch(err => {
+                    console.log(err)
+                })
+            },
+            //获取用户 姓名、手机号
+            getClientInfo(){
+                let openid = localStorage.getItem('openid')
+                this.axios.post(url.getClientInfo,{
+                    access_token:this.access_token,
+                    openid:openid
+                }).then(res => {
+                    console.log(res)
+                    this.car_owner = res.data.data.username
+                    localStorage.setItem('id',res.data.data.id)
+                    localStorage.setItem('wx_headimgurl',res.data.data.wx_headimgurl)
+                    localStorage.setItem('username',res.data.data.username)
+                }).catch(err => {
+                    console.log(err)
+                })
+            },
+            //  getSelfInfo   授权第一步
+            getSelfInfo(){
+                this.axios.post(url.getSelfInfo,{
+                    access_token:this.access_token
+                }).then(res=> {
+                    // 如果用户未登录   跳转到后台返回的链接
+                    if(res.data.code == 1020009){
+                        let isError = this.$route.query.status
+                        this.snsapi_userinfo()
+                        return false;
+                    // 静默授权，获取微信名 头像 openid id
+                    }else if(res.data.code == 0){
+                        this.isShowLoading = false;
+                        this.car_owner = res.data.data.username
+                        localStorage.setItem('openid',res.data.data.openid)
+                        localStorage.setItem('id',res.data.data.id)
+                        localStorage.setItem('wx_headimgurl',res.data.data.wx_headimgurl)
+                        localStorage.setItem('username',res.data.data.username)
+                    }
+                }).catch(err => {
+                    console.log(err)
+                })
+            },
+            // 静默授权模式
+            snsapi_base(){
+                this.axios.post(url.getOauthRedirect,{
+                    access_token:this.access_token,
+                    redirect_uri:`http://www.ichevip.com/view/user-rate?cr_id=${this.cr_id}`,
+                    scope:'snsapi_base'
+                }).then(res => {
+                    console.log(res)
+                    if(res.data.code == 0){
+                        window.location.href = res.data.data.oauth_url
+                    }
+                }).catch(err => {
+                    console.log(err)
+                })
+            },
+            // 非静默授权模式
+            snsapi_userinfo(){
+                this.axios.post(url.getOauthRedirect,{
+                    access_token:this.access_token,
+                    redirect_uri:`http://www.ichevip.com/view/user-rate?cr_id=${this.cr_id}`,
+                    scope:'snsapi_userinfo'
+                }).then(res => {
+                    console.log(res)
+                    if(res.data.code == 0){
+                        window.location.href = res.data.data.oauth_url
                     }
                 }).catch(err => {
                     console.log(err)

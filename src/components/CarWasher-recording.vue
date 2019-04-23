@@ -29,7 +29,7 @@
                     :disabled = "disabled_1"
                     v-if="is_show_before_button"
                     @click="submit_img_before"
-                >下一步</van-button>
+                >确认上传</van-button>
             </van-tab>
             <van-tab title="洗车后">
                 <van-uploader
@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import { Toast, ImagePreview} from 'vant';
+import { Toast, ImagePreview } from 'vant';
 import url from '@/serviceAPI.config.js'
 import mdFive from '@/md5.js'
     export default {

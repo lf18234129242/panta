@@ -15,13 +15,7 @@
             />
             <div class="input-box" @click="clickShowKeyboard">
                 <li>{{first}}</li>
-                <li>{{numArr[0]}}</li>
-                <li>{{numArr[1]}}</li>
-                <li>{{numArr[2]}}</li>
-                <li>{{numArr[3]}}</li>
-                <li>{{numArr[4]}}</li>
-                <li>{{numArr[5]}}</li>
-                <li>{{numArr[6]}}</li>
+                <li v-for="(item,index) in 7" :key="item">{{numArr[index]}}</li>
             </div>
             <div class="two-button">
                 <li 
@@ -56,17 +50,38 @@
                     show-toolbar
                     title="请选择小区名称"
                     :columns="columns"
+                    value-key="name"
                     @confirm="onConfirm"
                     @cancel="onCancel"
                     @change="onChange"
                 />
-                    <!-- value-key="name" -->
             </van-popup>
             
         </div>
+        <!-- 免责声明 -->
+        <div class="statement">
+            <van-checkbox v-model="checked">已阅读并同意</van-checkbox>
+            <span class="span-link" @click="statement">免责声明</span>
+            <span class="span">中的条款</span>
+        </div>
+        <div class="dialog-box">
+            <van-dialog
+                v-model="show_statement"
+                title="免责声明"
+                confirm-button-text="同意"
+                cancel-button-text="拒绝"
+                show-cancel-button
+                @confirm="onConfirm_statement"
+                @cancel="onCancel_statement"
+            >
+                {{dialog_content}}
+            </van-dialog>
+        </div>
+        <!-- 绑定车辆 -->
         <van-button
             type="info"
             size="large"
+            :disabled="disabledBindCarInfo"
             @click="submitAddCarInfo"
         >绑定车牌号码</van-button>
 
@@ -132,43 +147,26 @@
 import url from '@/serviceAPI.config.js'
 import mdFive from '@/md5.js'
 import {Toast} from 'vant'
-// const citys = [
-//     {id:111,'name':'杭州'},
-//     {id:222,'name':'宁波'},
-//     {id:333,'name':'温州'},
-//     {id:444,'name':'嘉兴'},
-//     {id:555,'name':'湖州'},
-// ];
-// const country = {
-//     '杭州':[
-//         {id:111,'name':'国杭州'},
-//         {id:222,'name':'国宁波'},
-//         {id:333,'name':'国温州'},
-//         {id:444,'name':'国嘉兴'},
-//         {id:555,'name':'国湖州'},
-//     ],
-//     '宁波':[
-//         {id:111,'name':'中杭州'},
-//         {id:222,'name':'中宁波'},
-//         {id:333,'name':'中温州'},
-//         {id:444,'name':'中嘉兴'},
-//         {id:555,'name':'中湖州'},
-//     ]
-// }
+var village_list = []
+var villagee_ieku_json = {}
     export default {
         data() {
             return {
-                columns___:[
+                columns:[
                     {
-                        values: citys,
+                        values: village_list,
                         className: 'column1'
                     },
                     {
-                        values: country['杭州'],
+                        values: villagee_ieku_json['北京星河湾'],
                         className: 'column2',
                     }
                 ],
-                columns:[],
+                checked:true,   //免责声明
+                show_statement:true,
+                dialog_content:'',
+                disc_id:0,
+                disabledBindCarInfo:false,      //绑定按钮是否禁用
                 headerImg:require('./../assets/img/car-red.png'),
                 car_owner:localStorage.getItem('username'),
                 plate_number: '',   //车牌号
@@ -176,6 +174,7 @@ import {Toast} from 'vant'
                 fixed:1,       //1-固定车位，2-非固定车位；默认 1
                 parking: '',    //车位号（默认必填），当fixed=1 时为必填
                 village_id: '',    //车辆所在的合作社区id
+                garage_id:'',       //车辆所在的合作社区的车库id
                 village_name: '',   //小区名称
                 isDisabled:true,
                 parkingIsDisabled:false,
@@ -265,6 +264,7 @@ import {Toast} from 'vant'
             }
         },
         created(){
+
             let openid = localStorage.getItem('openid')
             if(openid && openid !== 'undefined'){
                 //如果有 openid ，获取用户 姓名，手机号
@@ -284,14 +284,48 @@ import {Toast} from 'vant'
                 }
             } 
         },
+        watch:{
+            checked(){
+                if(this.checked == true){
+                    this.disc_id = 1;
+                    this.disabledBindCarInfo = false;
+                }else if (this.checked == false){
+                    this.disc_id = 0;
+                    this.disabledBindCarInfo = true;
+                }
+            }
+        },
         mounted(){
+            // 获取免责声明
+            this.axios.post(url.getDisclaimer,{
+                access_token:this.access_token,
+                type:1
+            }).then(res => {
+                console.log(res)
+                if(res.data.code == 0){
+                    this.dialog_content = res.data.data.content;
+                    this.disc_id = res.data.data.disc_id;
+                }
+            }).catch(err => {
+                console.log(err)
+                Toast(`获取免责声明失败，请您稍后再试！`)
+            })
+
+            // 获取小区列表
             this.axios.post(url.getVillageList,{
                 access_token:this.access_token
             }).then(res => {
                 console.log(res)
                 if(res.data.code == 0){
                     // 将后台传过来的 json 数组里面的 name 换成 text
-                    this.columns = JSON.parse(JSON.stringify(res.data.data.data).replace(/r_name/g,'text'))
+                    let columns_list;
+                    columns_list = JSON.parse(JSON.stringify(res.data.data.data).replace(/r_name/g,'name'))
+                    columns_list = JSON.parse(JSON.stringify(columns_list).replace(/title/g,'name'))
+                    
+                    for(let i=0;i<columns_list.length;i++){
+                        village_list.push(columns_list[i])
+                        villagee_ieku_json[village_list[i].name] = village_list[i].garage
+                    }
                 }else if(res.data.code == 1020009){
                     this.getSelfInfo()
                 }
@@ -299,11 +333,24 @@ import {Toast} from 'vant'
                 console.log(err)
             })
         },
+        destroyed(){
+            village_list = [];
+            villagee_ieku_json = {}
+        },
         methods: {
-            onChange(picker, values) {
-                console.log(picker)
-                console.log(values)
-                picker.setColumnValues(1, country[values[0].name]);
+            // 免责声明
+            statement(){
+                this.show_statement = true;
+            },
+            onConfirm_statement(){
+                this.show_statement = false;
+                this.checked = true;
+                this.disc_id = 1;
+            },
+            onCancel_statement(){
+                this.show_statement = false;
+                this.checked = false;
+                this.disc_id = 0;
             },
             onBlur(){
                 document.body.scrollTop = document.body.scrollTop;
@@ -402,7 +449,9 @@ import {Toast} from 'vant'
                         fixed:this.fixed,
                         parking:this.parking,
                         village_id:this.village_id,
-                        plate_type:this.plate_number.length < 8 ? 1 : 2
+                        garage_id:this.garage_id,
+                        plate_type:this.plate_number.length < 8 ? 1 : 2,
+                        disc_id:this.disc_id
                     }).then(res => {
                         console.log(res)
                         if(res.data.code == 0){
@@ -439,11 +488,21 @@ import {Toast} from 'vant'
                 this.show = true;
                 document.activeElement.blur();
             },
-            // 弹框 确认
+            onChange(picker, values) {
+                picker.setColumnValues(1, villagee_ieku_json[values[0].name]);
+            },
+            //选择小区 弹框 确认
             onConfirm(value) {
                 this.show = false;
-                this.village_name = value.text;
-                this.village_id = value.id;
+                if(value[1] == undefined){
+                    this.village_name = value[0].name
+                    this.village_id = value[0].id;
+                    this.garage_id = '';
+                }else{
+                    this.village_name = value[0].name + ',' + value[1].name;
+                    this.village_id = value[0].id;
+                    this.garage_id = value[1].id;
+                }
             },
             // 弹框 取消
             onCancel() {
@@ -684,5 +743,45 @@ import {Toast} from 'vant'
 <style lang="scss">
 .displayNone{
     display: none!important;
+}
+.font-12{
+    font-size: 12px;
+    line-height: 15px;
+}
+// 免责声明
+.statement{
+    width: 100%;
+    height: .667rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.8rem;
+    .van-checkbox__label{
+        @extend .font-12;
+    }
+    .span-link{
+        color: #3232E0;
+        @extend .font-12;
+    }
+    .span{
+        @extend .font-12;
+    }
+    .van-checkbox__icon .van-icon{
+        width: 15px;
+        height: 15px;
+        line-height: 15px;
+    }
+    .van-checkbox__icon, .van-checkbox__label{
+        line-height: 26px;
+    }
+}
+.dialog-box{
+    .van-dialog__content{
+        padding: 20px;
+        box-sizing: border-box;
+    }
+    .van-dialog__cancel, .van-dialog__cancel:active{
+        color: #f00;
+    }
 }
 </style>

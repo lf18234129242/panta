@@ -9,7 +9,7 @@ import md5 from 'js-md5';
 // import url from '@/serviceAPI.config.js'
 import ShadowBox from './component/ShadowBox.vue'
 import PageHeader from './component/PageHeader.vue'
-import {Button, Field, Cell, CellGroup, Popup, Picker, RadioGroup, Radio, Toast, Dialog, PasswordInput, Icon, Tab, Tabs, Uploader, NavBar, Rate, Loading, PullRefresh} from 'vant'
+import {Button, Field, Cell, CellGroup, Popup, Picker, RadioGroup, Radio, Toast, Dialog, PasswordInput, Icon, Tab, Tabs, Uploader, NavBar, Rate, Loading, PullRefresh, Checkbox} from 'vant'
 
 
 // 获取url里的参数值
@@ -18,7 +18,7 @@ import geturlpara from './geturlpara.js'
 Vue.component('shadow-box',ShadowBox)
 Vue.component('page-header',PageHeader)
 
-Vue.use(Button).use(Field).use(Cell).use(CellGroup).use(Popup).use(Picker).use(RadioGroup).use(Radio).use(Toast).use(Dialog).use(PasswordInput).use(Icon).use(Tab).use(Tabs).use(Uploader).use(NavBar).use(Rate).use(Loading).use(PullRefresh)
+Vue.use(Button).use(Field).use(Cell).use(CellGroup).use(Popup).use(Picker).use(RadioGroup).use(Radio).use(Toast).use(Dialog).use(PasswordInput).use(Icon).use(Tab).use(Tabs).use(Uploader).use(NavBar).use(Rate).use(Loading).use(PullRefresh).use(Checkbox)
 
 
 Vue.config.productionTip = false

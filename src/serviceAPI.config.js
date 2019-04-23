@@ -22,6 +22,7 @@ const URL = {
     getClearRecordDetail: BASEURL + 'clear_record/getClearRecordDetail',      //洗车记录页-洗车记录详情
     setStarLevel: BASEURL + 'clear_record/setStarLevel',      //洗车记录页-评价
     addFeedback: BASEURL + 'Client/addFeedback',      //意见反馈
+    getDisclaimer: BASEURL + 'Common/getDisclaimer',      //获取免责声明
 
 }
 
