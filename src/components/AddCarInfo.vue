@@ -4,6 +4,8 @@
             :headerImg="headerImg"
             descriptionTitle="欢迎关注 盘他车辆管家"
         ></page-header>
+        
+            {{numArr}}
         <div class="form">
             <van-field
                 v-model="car_owner"
@@ -13,10 +15,26 @@
                 @focus="hideKeyboard"
                 @blur="onBlur"
             />
-            <div class="input-box" @click="clickShowKeyboard">
+            <!-- 普通车牌号  新能源车牌号 -->
+            <div class="two-button">
+                <li 
+                    :class="[isDisabled_plant ? 'blueBg' : 'whiteBg']"
+                    @click.stop="changeYesToTrue" 
+                >普通车牌号</li>
+                <li 
+                    :class="[!isDisabled_plant ? 'blueBg' : 'whiteBg']"
+                    @click.stop="changeNoToFalse" 
+                >新能源车牌号</li>
+            </div>
+            <div class="input-box" @click="clickShowKeyboard" v-show="showKeyBoard">
+                <li>{{first}}</li>
+                <li v-for="(item,index) in 6" :key="item">{{numArr[index]}}</li>
+            </div>
+            <div class="input-box" @click="clickShowKeyboard" v-show="!showKeyBoard">
                 <li>{{first}}</li>
                 <li v-for="(item,index) in 7" :key="item">{{numArr[index]}}</li>
             </div>
+            <!-- 是否为固定车位 -->
             <div class="two-button">
                 <li 
                     :class="[isDisabled ? 'blueBg' : 'whiteBg']"
@@ -56,7 +74,6 @@
                     @change="onChange"
                 />
             </van-popup>
-            
         </div>
         <!-- 免责声明 -->
         <div class="statement">
@@ -176,7 +193,9 @@ var villagee_ieku_json = {}
                 village_id: '',    //车辆所在的合作社区id
                 garage_id:'',       //车辆所在的合作社区的车库id
                 village_name: '',   //小区名称
-                isDisabled:true,
+                isDisabled:true,    //是否为固定车位
+                isDisabled_plant:true,  //是否为普通车牌号
+                showKeyBoard:true,      //显示普通车牌号 或者 新能源车牌号
                 parkingIsDisabled:false,
                 parkingPlaceholder:'请输入车位号码',
                 show:false,
@@ -483,6 +502,17 @@ var villagee_ieku_json = {}
                 // this.parkingPlaceholder = '无固定车位无需填写'
                 // this.parking = ''
             },
+            changeYesToTrue(){
+                this.isDisabled_plant = true;
+                this.showKeyBoard = true;
+                if(this.numArr.length > 6){
+                    this.numArr.pop()
+                }
+            },
+            changeNoToFalse(){
+                this.isDisabled_plant = false;
+                this.showKeyBoard = false;
+            },
             // 选择小区
             checkVillage(){
                 this.show = true;
@@ -544,8 +574,14 @@ var villagee_ieku_json = {}
                     // 把选中的值 push 到 numArr 内
                     this.numArr.push(this.English_Number[index].name)
                     // 如果 numArr 中的值超过 7 个（车牌号的最大位数），删除最后一个
-                    if(this.numArr.length > 7){
-                        this.numArr.pop()
+                    if(this.showKeyBoard){
+                        if(this.numArr.length > 6){
+                            this.numArr.pop()
+                        }
+                    }else{
+                        if(this.numArr.length > 7){
+                            this.numArr.pop()
+                        }
                     }
                 }
             },

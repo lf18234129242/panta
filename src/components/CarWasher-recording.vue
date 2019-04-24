@@ -46,6 +46,11 @@
                 <div class="img-box" v-else-if="!img_after_disabled" @click.stop="show_after_img">
                     <img :src="warsher_after" alt="">
                 </div>
+                <div class="checkbox" v-if="is_show_after_button">
+                    <van-checkbox v-model="checked_1">车位与车牌不符</van-checkbox>
+                    <van-checkbox v-model="checked_2">2:00前未在指定车位发现车辆</van-checkbox>
+                </div>
+        {{checked_arr}}
                 <van-button
                     type="info"
                     size="large"
@@ -86,6 +91,9 @@ import mdFive from '@/md5.js'
                 instance_after:'',
                 isShow_loading_before:false,     //是否显示图片上传loading
                 isShow_loading_after:false,     //是否显示图片上传loading
+                checked_1:false,        //复选框
+                checked_2:false,        //复选框
+                checked_arr:[],        //复选框提交数组
             }
         },
         mounted(){
@@ -121,6 +129,24 @@ import mdFive from '@/md5.js'
             }else if(this.active_ == 1 && this.instance_after){
                 this.instance_after.close();
             }
+        },
+        watch:{
+            checked_1(){
+                if(this.checked_1){
+                    this.checked_arr.push(1);
+                    this.checked_arr.sort()
+                }else{
+                    this.checked_arr.splice(this.checked_arr.indexOf(1),1)
+                }
+            },
+            checked_2(){
+                if(this.checked_2){
+                    this.checked_arr.push(2);
+                    this.checked_arr.sort()
+                }else{
+                    this.checked_arr.splice(this.checked_arr.indexOf(2),1)
+                }
+            },
         },
         methods: {
             //查看图片
@@ -241,6 +267,7 @@ import mdFive from '@/md5.js'
                     img_clear_status:img_clear_status,
                     img_name:this.img_name,
                     img_path:this.img_path,
+                    special_cases:this.checked_arr,
                 }).then(res => {
                     console.log(res)
                     if(res.data.code == 0){
@@ -304,12 +331,20 @@ import mdFive from '@/md5.js'
             justify-content: center;
         }
     }
+    .checkbox{
+        width: 100%;
+        padding: .667rem 0 0 3.667rem;
+        box-sizing: border-box;
+        .van-checkbox{
+            margin-bottom: 0.5rem;
+        }
+    }
     .van-button--large{
         width:21rem;
         height:3.2rem;
         background:rgba(50,119,216,1);
         border-radius:0.4rem;
-        margin: 4rem auto 2rem;
+        margin: 2rem auto 2rem;
         display: block;
         line-height: 0;
     }
