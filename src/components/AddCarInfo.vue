@@ -4,8 +4,6 @@
             :headerImg="headerImg"
             descriptionTitle="欢迎关注 盘他车辆管家"
         ></page-header>
-        
-            {{numArr}}
         <div class="form">
             <van-field
                 v-model="car_owner"

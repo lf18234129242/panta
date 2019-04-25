@@ -1,12 +1,19 @@
 <template>
     <div class="carWasher-recording">
-        <h2>{{plate_number}}</h2>
+        <van-nav-bar
+            :title="plate_number"
+            left-text="返回"
+            @click-left="onClickLeft"
+        >
+            <van-icon name="wap-home" slot="left" />
+        </van-nav-bar>
         <van-tabs
             type="card"
             animated
             swipeable
             v-model="active_"
             @click="onClickTab"
+            @disabled="showToast"
         >
             <van-tab title="洗车前">
                 <van-uploader
@@ -31,7 +38,7 @@
                     @click="submit_img_before"
                 >确认上传</van-button>
             </van-tab>
-            <van-tab title="洗车后">
+            <van-tab title="洗车后" :disabled="isFirstUpload">
                 <van-uploader
                     :after-read="onRead_after"
                     v-if="img_after_disabled"
@@ -50,7 +57,6 @@
                     <van-checkbox v-model="checked_1">车位与车牌不符</van-checkbox>
                     <van-checkbox v-model="checked_2">2:00前未在指定车位发现车辆</van-checkbox>
                 </div>
-        {{checked_arr}}
                 <van-button
                     type="info"
                     size="large"
@@ -77,8 +83,10 @@ import mdFive from '@/md5.js'
                 img_arr_box_before:[],
                 img_arr_box_after:[],
                 active_:'',
-                img_name:'',
-                img_path:'',
+                img_name_before:'',
+                img_path_before:'',
+                img_name_after:'',
+                img_path_after:'',
                 disabled_1:false,
                 disabled_2:false,
                 is_show_before_button:true,
@@ -94,6 +102,7 @@ import mdFive from '@/md5.js'
                 checked_1:false,        //复选框
                 checked_2:false,        //复选框
                 checked_arr:[],        //复选框提交数组
+                isFirstUpload:true, // 判断第一张图片是否上传，如果没有上传，不可跳到第二个 tab
             }
         },
         mounted(){
@@ -113,10 +122,12 @@ import mdFive from '@/md5.js'
                     if(this.warsher_before && this.warsher_before !== undefined){
                         this.is_show_before_button = false;
                         this.img_before_disabled = false;
+                        this.isFirstUpload = false;
                     }
                     if(this.warsher_after && this.warsher_after !== undefined){
                         this.is_show_after_button = false;
                         this.img_after_disabled = false;
+                        this.isFirstUpload = false;
                     }
                 }
             }).catch(err => {
@@ -149,6 +160,10 @@ import mdFive from '@/md5.js'
             },
         },
         methods: {
+            // 返回上一个页面
+            onClickLeft(){
+                this.$router.go(-1)
+            },
             //查看图片
             show_before_img(){
                 this.instance_before = ImagePreview({
@@ -167,14 +182,18 @@ import mdFive from '@/md5.js'
                     this.active_ == 1
                 }
             },
+            // 判断第一张图片是否上传，如果没有上传，不可跳到第二个 tab
+            showToast(){
+                Toast('请先上传洗车前的图片！')
+            },
             // 提交图片
             submit_img_before() {
                 this.disabled_1 = true;
-                this.submit_img_finally(1);
+                this.submit_img_finally(1,this.img_name_before,this.img_path_before);
             },
             submit_img_after() {
                 this.disabled_2 = true;
-                this.submit_img_finally(2);
+                this.submit_img_finally(2,this.img_name_after,this.img_path_after);
             },
             // 选择图片
             onRead_before(file, detail) {
@@ -204,13 +223,13 @@ import mdFive from '@/md5.js'
                         // 最后将base64编码的图片保存到数组中，留待上传。
                         this.warsher_before = file.content;
                         this.img_arr_box_before.push(file.content)
-                        this.basePicUpload(this.img_arr_box_before);
+                        this.basePicUpload_before();
                     }                       
                 }else{
                     // 不做处理的jpg和png以及gif直接保存到数组
                     this.warsher_before = file.content;
                     this.img_arr_box_before.push(file.content)
-                    this.basePicUpload(this.img_arr_box_before);
+                    this.basePicUpload_before();
                 }
                 this.disabled_1 = true;
             },
@@ -228,30 +247,44 @@ import mdFive from '@/md5.js'
                         file.content = canvas.toDataURL(file.file.type, 0.95) 
                         this.warsher_after = file.content;
                         this.img_arr_box_after.push(file.content)
-                        this.basePicUpload(this.img_arr_box_after);
+                        this.basePicUpload_after();
                     }                       
                 }else{
                     this.warsher_after = file.content;
                     this.img_arr_box_after.push(file.content)
-                    this.basePicUpload(this.img_arr_box_after);
+                    this.basePicUpload_after();
                 }
                 this.disabled_2 = true;
             },
             // 上传 base 64 图片
-            basePicUpload(content){
+            basePicUpload_before(){
                 this.axios.post(url.basePicUpload,{
                     access_token:this.access_token,
-                    imgs:content
+                    imgs:this.img_arr_box_before
                 }).then(res => {
                     console.log(res)
                     if(res.data.code == 0){
                         this.isShow_loading_before = false;
-                        this.isShow_loading_after = false;
-                        this.img_name = res.data.data[0].real_img.file_name;
-                        this.img_path = res.data.data[0].real_img.img_path;
+                        this.img_name_before = res.data.data[0].real_img.file_name;
+                        this.img_path_before = res.data.data[0].real_img.img_path;
                         this.img_arr_box_before = []
-                        this.img_arr_box_after = []
                         this.disabled_1 = false;
+                    }
+                }).catch(err => {
+                    console.log(err)
+                })
+            },
+            basePicUpload_after(){
+                this.axios.post(url.basePicUpload,{
+                    access_token:this.access_token,
+                    imgs:this.img_arr_box_after
+                }).then(res => {
+                    console.log(res)
+                    if(res.data.code == 0){
+                        this.isShow_loading_after = false;
+                        this.img_name_after = res.data.data[0].real_img.file_name;
+                        this.img_path_after = res.data.data[0].real_img.img_path;
+                        this.img_arr_box_after = []
                         this.disabled_2 = false;
                     }
                 }).catch(err => {
@@ -259,19 +292,20 @@ import mdFive from '@/md5.js'
                 })
             },
             // 最后上传图片
-            submit_img_finally(img_clear_status) {
+            submit_img_finally(img_clear_status,img_name,img_path) {
                 this.axios.post(url.uploadRecordImages,{
                     access_token:this.access_token,
                     user_token:localStorage.getItem('user_token'),
                     cr_id:this.id,
                     img_clear_status:img_clear_status,
-                    img_name:this.img_name,
-                    img_path:this.img_path,
+                    img_name:img_name,
+                    img_path:img_path,
                     special_cases:this.checked_arr,
                 }).then(res => {
                     console.log(res)
                     if(res.data.code == 0){
                         Toast(`上传图片成功!`)
+                        this.isFirstUpload = false;
                         if(this.active_ == 0){
                             this.active_ = 1;
                         }else{
@@ -291,6 +325,9 @@ import mdFive from '@/md5.js'
 .carWasher-recording{
     width: 100%;
     position: absolute;
+    .van-nav-bar .van-icon{
+        font-size: 20px;
+    }
     h2{
         height: 1.667rem;
         line-height: 1.667rem;
