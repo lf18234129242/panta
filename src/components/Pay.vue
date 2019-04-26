@@ -79,12 +79,12 @@ import wx from 'weixin-js-sdk'
         methods: {
             // 选择套餐
             checkRadio(index){
-                for(let i=0;i<this.packageList.length;i++){
-                    if(this.packageList[index].rest_cnt == 0){
-                        Toast('体验卡已被抢购一空，请选择其他套餐！')
-                    }else{
-                        this.radio = index;
-                    }
+                if(this.packageList[index].over_self_limits == 0){
+                    Toast('每人限购1次！')
+                }else if(this.packageList[index].rest_cnt == 0){
+                    Toast('体验卡已被抢购一空，请选择其他套餐！')
+                }else{
+                    this.radio = index;
                 }
             },
             // 下单
