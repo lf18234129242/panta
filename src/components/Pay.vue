@@ -23,7 +23,7 @@
                         <p>{{item.package_title}}</p>
                     </li>
                     <li class="radio">
-                        <van-radio :name="index" :disabled="item.rest_cnt == 0" @click="checkRadio(index)"></van-radio>
+                        <van-radio :name="index" :disabled="item.rest_cnt == 0 || item.over_self_limits == 0" @click="checkRadio(index)"></van-radio>
                     </li>
                 </div>
                 <div class="bottom">

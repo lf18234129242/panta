@@ -37,6 +37,10 @@
                                     <h3>车身颜色：</h3>
                                     <h4>{{item_.car_color}}</h4>
                                 </li>
+                                <li class="">
+                                    <h3>到期时间：</h3>
+                                    <h4>{{item_.over_time | over_time}}</h4>
+                                </li>
                             </div>
                         </shadow-box>
                     </router-link>
@@ -72,40 +76,24 @@ import mdFive from '@/md5.js'
             }
         },
         created(){
-            console.log('created')
                 // 验证登录
             this.user_token = localStorage.getItem('user_token') ? localStorage.getItem('user_token') : this.$route.query.user_token;
 
             this.active = sessionStorage.getItem('active') ? sessionStorage.getItem('active') : this.active;
             
             if(this.active == 0){
-                    // alert(`mounted 82`)
-                this.getTaskList_1();
+                this.getTaskList(1);
             }else if(this.active == 1){
-                    // alert(`mounted 85`)
-                this.getTaskList_2();
+                this.getTaskList(2);
             }else if(this.active == 2){
-                    // alert(`mounted 88`)
-                this.getTaskList_3();
+                this.getTaskList(3);
             }
         },
-        // watch:{
-        //     active(){
-        //         if(this.active == 0){
-        //             alert(`active 95`)
-        //             this.getTaskList_1();
-        //         }else if(this.active == 1){
-        //             alert(`active 98`)
-        //             this.getTaskList_2();
-        //         }else if(this.active == 2){
-        //             alert(`active 101`)
-        //             this.getTaskList_3();
-        //         }
-        //     },
-        // },
-        // destroyed(){
-        //     sessionStorage.removeItem('active')
-        // },
+        filters:{
+            over_time(value){
+                return value.substring(0,10)
+            },
+        },
         methods: {
             // 下拉刷新
             onRefresh() {
@@ -113,11 +101,11 @@ import mdFive from '@/md5.js'
                     this.$toast('刷新成功');
                     this.isLoading = false;
                     if(this.active == 0){
-                        this.getTaskList_1();
+                        this.getTaskList(1);
                     }else if(this.active == 1){
-                        this.getTaskList_2();
+                        this.getTaskList(2);
                     }else if(this.active == 2){
-                        this.getTaskList_3();
+                        this.getTaskList(3);
                     }
                 }, 500);
             },
@@ -125,50 +113,24 @@ import mdFive from '@/md5.js'
             onClickTab(index, title) {
                 if(index == 0){
                     this.active == 0
-                        this.getTaskList_1();
+                        this.getTaskList(1);
                 }else if(index == 1){
                     this.active == 1
-                        this.getTaskList_2();
+                        this.getTaskList(2);
                 }else if(index == 2){
                     this.active == 2
-                        this.getTaskList_3();
+                        this.getTaskList(3);
                 }
             },
-            getTaskList_1(){
+            getTaskList(statusNum){
                 this.axios.post(url.getTaskList,{
                     user_token:this.user_token,
                     access_token:this.access_token,
-                    status:1
+                    status:statusNum
                 }).then(res => {
                     if(res.data.code == 0){
-                        this.taskList[0].taskList_ = res.data.data;
-                        console.log(this.taskList[0].taskList_)
-                    }
-                }).catch(err => {
-                    console.log(err)
-                })
-            },
-            getTaskList_2(){
-                this.axios.post(url.getTaskList,{
-                    user_token:this.user_token,
-                    access_token:this.access_token,
-                    status:2
-                }).then(res => {
-                    if(res.data.code == 0){
-                        this.taskList[1].taskList_ = res.data.data;
-                    }
-                }).catch(err => {
-                    console.log(err)
-                })
-            },
-            getTaskList_3(){
-                this.axios.post(url.getTaskList,{
-                    user_token:this.user_token,
-                    access_token:this.access_token,
-                    status:3
-                }).then(res => {
-                    if(res.data.code == 0){
-                        this.taskList[2].taskList_ = res.data.data;
+                        this.taskList[statusNum-1].taskList_ = res.data.data;
+                        console.log(this.taskList[statusNum-1].taskList_)
                     }
                 }).catch(err => {
                     console.log(err)
@@ -227,7 +189,7 @@ import mdFive from '@/md5.js'
             padding-top: 1rem;
             box-sizing: border-box;
             li{
-                margin-right: 1.8rem;
+                margin-right: 1rem;
                 h3{
                     font-size: 12px;
                     color: #606470;
