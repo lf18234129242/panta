@@ -31,7 +31,7 @@
                             <div class="bottom">
                                 <li class="">
                                     <h3>车型信息：</h3>
-                                    <h4>{{item_.car_brand}}</h4>
+                                    <h4>{{item_.car_brand}}{{item_.car_model}}</h4>
                                 </li>
                                 <li class="">
                                     <h3>车身颜色：</h3>
@@ -183,13 +183,24 @@ import mdFive from '@/md5.js'
         }
         .bottom{
             width: 100%;
-            height: 3.867rem;
+            // height: 3.867rem;
             display: flex;
+            flex-wrap: wrap;
             align-items: center;
             padding-top: 1rem;
             box-sizing: border-box;
+            li:type-of(1){
+                flex: 2;
+            }
+            li:type-of(2){
+                flex: 1;
+            }
+            li:type-of(3){
+                flex: 1;
+            }
             li{
                 margin-right: 1rem;
+                margin-bottom: 1rem;
                 h3{
                     font-size: 12px;
                     color: #606470;
