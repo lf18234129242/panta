@@ -1,64 +1,65 @@
 <template>
   <div class="hello">
-    <page-header
-      :headerImg="headerImg"
-      descriptionTitle="个人中心"
-    ></page-header>
-    <div
-      class="cars-box"
-      v-for="(item, index) in carsInfo"
-      :key="item.index"
-      @click="to_washer_record(index)"
-    >
-      <shadow-box>
-        <div class="top">
-          <li class="car"><img src="./../assets/img/car-green.png" alt=""></li>
-          <li :class="['carnum', item.plate_number.length == 8 ? 'carNumBgBlueGreen' : 'carNumBgBlue']">
-            <div>{{item.plate_number}}</div>
-          </li>
-          <van-button
-            v-if="item.fixed == 2"
-            type="info"
-            size="normal"
-            @click.stop="checkIn(index)"
-          >停车签到</van-button>
-          <li
-            v-else
-            class="parking-number"
-          >
-            <div>{{item.parking}}</div>
-          </li>
-        </div> 
-        <div class="bottom">
-          <li>
-            <span>车身颜色:</span>
-            <p>{{item.carColor ? item.carColor : '--'}}</p>
-          </li>
-          <li>
-            <span>车型信息:</span>
-            <p>{{item.car_brand + item.car_model?item.car_brand + item.car_model:'--'}}</p>
-          </li>
-        </div>
-        <div class="bottom">
-          <li>
-            <span>洗车次数:</span>
-            <p>{{item.clear_times?item.clear_times:0}}</p>
-          </li>
-          <li>
-            <span>服务到期时间:</span>
-            <p>{{item.over_time}}</p>
-          </li>
-          <van-button type="info" size="small" @click.stop="renewalFee(index)">续费</van-button>
-        </div>
-      </shadow-box>
-    </div>
-    <!-- 添加车辆 -->
-    <van-button
-      type="info"
-      size="large"
-      @click="addCarInfo"
-    >添加车辆</van-button>
-
+    <van-pull-refresh v-model="isLoading" @refresh="onRefresh">
+      <page-header
+        :headerImg="headerImg"
+        descriptionTitle="个人中心"
+      ></page-header>
+      <div
+        class="cars-box"
+        v-for="(item, index) in carsInfo"
+        :key="item.index"
+        @click="to_washer_record(index)"
+      >
+        <shadow-box>
+          <div class="top">
+            <li class="car"><img src="./../assets/img/car-green.png" alt=""></li>
+            <li :class="['carnum', item.plate_number.length == 8 ? 'carNumBgBlueGreen' : 'carNumBgBlue']">
+              <div>{{item.plate_number}}</div>
+            </li>
+            <van-button
+              v-if="item.fixed == 2"
+              type="info"
+              size="normal"
+              @click.stop="checkIn(index)"
+            >停车签到</van-button>
+            <li
+              v-else
+              class="parking-number"
+            >
+              <div>{{item.parking}}</div>
+            </li>
+          </div> 
+          <div class="bottom">
+            <li>
+              <span>车身颜色:</span>
+              <p>{{item.car_color ? item.car_color : '--'}}</p>
+            </li>
+            <li>
+              <span>车型信息:</span>
+              <p>{{item.car_brand + item.car_model ? item.car_brand + item.car_model : '--'}}</p>
+            </li>
+          </div>
+          <div class="bottom">
+            <li>
+              <span>洗车次数:</span>
+              <p>{{item.clear_times?item.clear_times:0}}</p>
+            </li>
+            <li>
+              <span>服务到期时间:</span>
+              <p>{{item.over_time}}</p>
+            </li>
+            <van-button type="info" size="small" @click.stop="renewalFee(index)">续费</van-button>
+          </div>
+        </shadow-box>
+      </div>
+      <!-- 添加车辆 -->
+      <van-button
+        type="info"
+        size="large"
+        @click="addCarInfo"
+      >添加车辆</van-button>
+    </van-pull-refresh>
     <!-- 停车签到弹出输入框 -->
     <van-dialog
       v-model="show"
@@ -103,44 +104,61 @@ export default {
       show:false,
       id:'',    //车辆 id
       isShowLoading:true,
+      isLoading:false,      //下拉刷新
     }
   },
   created(){
     let openid = localStorage.getItem('openid')
+    // alert('created--110')
     if(openid && openid !== 'undefined'){
+    // alert('created--112')
       //如果有 openid ，获取用户 姓名，手机号
       this.isShowLoading = false;
       this.getClientInfo()
       return;
     }else{
+    // alert('created--118')
       localStorage.setItem('openid',this.$route.query.openid)
       let openid = localStorage.getItem('openid')
       if(openid && openid !== 'undefined'){
+    // alert('created--122')
       this.isShowLoading = false;
         //如果有 openid ，获取用户 姓名，手机号
         this.getClientInfo()
       }else{
+    // alert('created--127')
         // 授权第一步
         this.getSelfInfo()
       }
     } 
   },
   mounted(){
-    // 获取车辆列表
-    this.axios.post(url.getCarList,{
-      access_token:this.access_token
-    }).then(res => {
-      console.log(res)
-      if(res.data.code == 0){
-        this.carsInfo = res.data.data;
-      }else if(res.data.code == 1020009){
-        this.getSelfInfo()
-      }
-    }).catch(err => {
-      console.log(err)
-    })
+    this.getCarList();
   },
   methods: {
+    // 下拉刷新
+    onRefresh(){
+      this.getCarList();
+      setTimeout(() => {
+        this.$toast('刷新成功');
+        this.isLoading = false;
+      }, 500);
+    },
+    getCarList(){
+      // 获取车辆列表
+      this.axios.post(url.getCarList,{
+        access_token:this.access_token
+      }).then(res => {
+        console.log(res)
+        if(res.data.code == 0){
+          this.carsInfo = res.data.data;
+        }else if(res.data.code == 1020009){
+          this.getSelfInfo()
+        }
+      }).catch(err => {
+        console.log(err)
+      })
+    },
     //跳转到洗车记录页
     to_washer_record(index){
       this.$router.push({
@@ -152,12 +170,14 @@ export default {
     },
     //获取用户 姓名、手机号
     getClientInfo(){
+    // alert('getClientInfo--164')
       let openid = localStorage.getItem('openid')
       this.axios.post(url.getClientInfo,{
         access_token:this.access_token,
         openid:openid
       }).then(res => {
         console.log(res)
+    // alert('getClientInfo--171')
         this.car_owner = res.data.data.username
         localStorage.setItem('id',res.data.data.id)
         localStorage.setItem('wx_headimgurl',res.data.data.wx_headimgurl)
@@ -168,27 +188,33 @@ export default {
     },
     //  getSelfInfo   授权第一步
     getSelfInfo(){
+    // alert('getSelfInfo--182')
         this.axios.post(url.getSelfInfo,{
             access_token:this.access_token
         }).then(res=> {
             console.log(res)
             // 如果用户未登录   跳转到后台返回的链接
             if(res.data.code == 1020009){
+    // alert('getSelfInfo--189')
                 let isError = this.$route.query.status
                 // 如果 url 里面没有 isError 参数，就跳转请求连接
                 if(isError==undefined || !isError){
+    // alert('getSelfInfo--193')
                     window.location.href = res.data.data.oauth_url;
                     // 如果请求返回 ERROR ，则主动请求授权
                 }else if(isError == 'ERROR'){
+    // alert('getSelfInfo--197')
                     // 非静默授权模式
                     this.snsapi_userinfo()
                 }else if(isError == 'SUCCESS'){
+    // alert('getSelfInfo--201')
                     // 静默授权模式
                     this.snsapi_base()
                 }
                 return false;
             // 静默授权，获取微信名 头像 openid id
             }else if(res.data.code == 0){
+    // alert('getSelfInfo--208')
                 this.isShowLoading = false;
                 this.car_owner = res.data.data.username
                 localStorage.setItem('openid',res.data.data.openid)
@@ -203,6 +229,7 @@ export default {
     },
     // 静默授权模式
     snsapi_base(){
+    // alert('snsapi_base--223')
         this.axios.post(url.getOauthRedirect,{
             access_token:this.access_token,
             redirect_uri:`http://www.ichevip.com/view/addCarInfo`,
@@ -210,6 +237,7 @@ export default {
         }).then(res => {
             console.log(res)
             if(res.data.code == 0){
+    // alert('snsapi_base--231')
                 window.location.href = res.data.data.oauth_url
             }
         }).catch(err => {
@@ -218,6 +246,7 @@ export default {
     },
     // 非静默授权模式
     snsapi_userinfo(){
+    // alert('snsapi_userinfo--240')
         this.axios.post(url.getOauthRedirect,{
             access_token:this.access_token,
             redirect_uri:`http://www.ichevip.com/view/addCarInfo`,
@@ -225,6 +254,7 @@ export default {
         }).then(res => {
             console.log(res)
             if(res.data.code == 0){
+    // alert('snsapi_userinfo--248')
                 window.location.href = res.data.data.oauth_url
             }
         }).catch(err => {

@@ -23,6 +23,11 @@
             </div>
         </section>
 
+        <div class="checkbox">
+            <p v-if="special_cases[0] == 1">车位与车牌不符</p>
+            <p v-if="special_cases[1] == 2">2:00前未在指定车位发现车辆</p>
+        </div>
+
         <!-- 服务评价 -->
         <div class="rate" v-if="is_show_rate">
             <p>服务评价</p>
@@ -101,6 +106,7 @@ import { Toast, ImagePreview} from 'vant'
                     this.r_name = res.data.data.r_name
                     this.warsher_before_img = res.data.data.before_img.img_url
                     this.warsher_after_img = res.data.data.after_img.img_url
+                    this.special_cases = res.data.data.special_cases
                 }else{
                     this.$router.replace('/')
                     this.go(-1)
@@ -226,6 +232,14 @@ import { Toast, ImagePreview} from 'vant'
 .User-rate{
     width: 100%;
     position: absolute;
+    
+    .checkbox{
+        width: 70%;
+        padding: .667rem 0 0.5rem 3.667rem;
+        box-sizing: border-box;
+        border-bottom: 1px solid #d1d1d1;
+        margin:0 auto 1rem;
+    }
     .van-nav-bar .van-icon{
         color: #323643;
         font-size: 1.067rem;

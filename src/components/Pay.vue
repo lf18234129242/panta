@@ -70,6 +70,8 @@ import wx from 'weixin-js-sdk'
                     this.packageList = res.data.data;
                     if(this.packageList[0].rest_cnt == 0){
                         this.radio = 1;
+                    }else if(this.packageList[0].over_self_limits == 0){
+                        this.radio = 1;
                     }
                 }
             }).catch(err => {
@@ -85,6 +87,7 @@ import wx from 'weixin-js-sdk'
                     Toast('体验卡已被抢购一空，请选择其他套餐！')
                 }else{
                     this.radio = index;
+                    this.wechatPay_button = false;
                 }
             },
             // 下单
@@ -137,21 +140,26 @@ import wx from 'weixin-js-sdk'
                                     // 支付失败的处理 
                                     options.fail = function () {
                                         pay_order = true;
+                                        this.wechatPay_button = false;
                                     };
                                     // 传入参数，发起JSAPI支付
                                     wx.chooseWXPay(options);
                                 }else{
                                     Toast(`支付失败，请稍后再试！`)
+                                    this.wechatPay_button = false;
                                 }
                             })
                         }).catch(error => {
                             Toast(`下单失败，请稍后再试！${error}`)
+                            this.wechatPay_button = false;
                         })
                     }else{
                         Toast('下单失败，请核对您所填信息是否正确后再试！')
+                        this.wechatPay_button = false;
                     }
                 }).catch(err => {
                     Toast(`下单失败，请稍后再试！${err}`)
+                    this.wechatPay_button = false;
                 })
             }
         },

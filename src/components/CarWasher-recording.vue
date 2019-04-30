@@ -57,6 +57,10 @@
                     <van-checkbox v-model="checked_1">车位与车牌不符</van-checkbox>
                     <van-checkbox v-model="checked_2">2:00前未在指定车位发现车辆</van-checkbox>
                 </div>
+                <div class="checkbox" v-else>
+                    <p v-if="special_cases[0] == 1">车位与车牌不符</p>
+                    <p v-if="special_cases[1] == 2">2:00前未在指定车位发现车辆</p>
+                </div>
                 <van-button
                     type="info"
                     size="large"
@@ -104,6 +108,7 @@ import EXIF from 'exif-js'
                 checked_2:false,        //复选框
                 checked_arr:[],        //复选框提交数组
                 isFirstUpload:true, // 判断第一张图片是否上传，如果没有上传，不可跳到第二个 tab
+                special_cases:[],
             }
         },
         mounted(){
@@ -130,6 +135,7 @@ import EXIF from 'exif-js'
                         this.img_after_disabled = false;
                         this.isFirstUpload = false;
                     }
+                    this.special_cases = JSON.parse(res.data.data.special_cases);
                 }
             }).catch(err => {
                 console.log(err)
