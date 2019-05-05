@@ -205,22 +205,16 @@ import EXIF from 'exif-js'
             // 选择图片
             onRead_before(file, detail) {
                 var this_ = this;
-                console.log(file)
-                console.log(EXIF)
                 this.isShow_loading_before = true;
                 var image = new Image,
                     Orientation;
                 image.src = file.content;
                 image.onload = function(){
-                    EXIF.getData(file, function() {  
-                        console.log(file)
+                    EXIF.getData(image, function() {  
                         Orientation = EXIF.getTag(this, 'Orientation');
                     });
-                        // alert('Orientation:'+ EXIF.getTag(this, 'Orientation'))
-                        // alert('Orientation:'+ Orientation)
                     var imgWidth = this.width,
                         imgHeight = this.height;
-                        // alert(imgWidth + '------------' + imgHeight)
                     if(imgWidth > imgHeight && imgWidth > 1500){
                         imgWidth = 1500;
                         imgHeight = Math.ceil(1500 * this.height / this.width);
@@ -228,7 +222,6 @@ import EXIF from 'exif-js'
                         imgWidth = Math.ceil(1500 * this.width / this.height);
                         imgHeight = 1500;
                     }
-                        // alert(imgWidth + '------------' + imgHeight)
                     var canvas =  document.createElement('canvas')
                     let ctx = canvas.getContext('2d') 
                     canvas.width = imgWidth;
@@ -266,53 +259,18 @@ import EXIF from 'exif-js'
                     this_.basePicUpload_before();
                     this_.disabled_2 = true;
                 }
-                // 大于1.5MB的jpeg和png图片都缩小像素上传
-                // if(/\/(?:jpeg|png)/i.test(file.file.type)&&file.file.size>2000000) {
-                //     // 创建Canvas对象(画布)
-                //     let canvas =  document.createElement('canvas')  
-                //     // 获取对应的CanvasRenderingContext2D对象(画笔)
-                //     let context = canvas.getContext('2d') 
-                //     // 创建新的图片对象 
-                //     let img = new Image()
-                //     // 指定图片的DataURL(图片的base64编码数据)
-                //     img.src = file.content
-                //     // 监听浏览器加载图片完成，然后进行进行绘制
-                //     img.onload = () => {
-                //         // 指定canvas画布大小，该大小为最后生成图片的大小
-                //         canvas.width = 2000
-                //         canvas.height = 2000
-                //         /* drawImage画布绘制的方法。(0,0)表示以Canvas画布左上角为起点，
-                //         600，600是将图片按给定的像素进行缩小。
-                //         如果不指定缩小的像素图片将以图片原始大小进行绘制，
-                //         图片像素如果大于画布将会从左上角开始按画布大小部分绘制图片，最后的图片就是张局部图。*/ 
-                //         context.drawImage(img, 0, 0, 2000, 2000)
-                //         // 将绘制完成的图片重新转化为base64编码，file.file.type为图片类型，0.92为默认压缩质量
-                //         file.content = canvas.toDataURL(file.file.type, 0.95) 
-                //         // 最后将base64编码的图片保存到数组中，留待上传。
-                //         this.warsher_before = file.content;
-                //         this.img_arr_box_before.push(file.content)
-                //         this.basePicUpload_before();
-                //     }                       
-                // }else{
-                //     // 不做处理的jpg和png以及gif直接保存到数组
-                //     console.log(this.img_arr_box_after)
-                //     this.warsher_before = file.content;
-                //     this.img_arr_box_before.push(file.content)
-                //     console.log(this.img_arr_box_after)
-                //     this.basePicUpload_before();
-                // }
-                // this.disabled_1 = true;
             },
             onRead_after(file, detail){
                 var this_ = this;
                 this.isShow_loading_after = true;
                 var image = new Image,
-                    Orientation = null;
+                    Orientation;
                 image.src = file.content;
-                EXIF.getData(file, function() {  
-                    Orientation = EXIF.getTag(this, 'Orientation');
-                });
+                
                 image.onload = function(){
+                    EXIF.getData(image, function() {  
+                        Orientation = EXIF.getTag(this, 'Orientation');
+                    });
                     var imgWidth = this.width,
                         imgHeight = this.height;
                     if(imgWidth > imgHeight && imgWidth > 1500){
@@ -329,6 +287,7 @@ import EXIF from 'exif-js'
                     if(Orientation && Orientation != 1){
                         switch(Orientation){
                             case 6:     // 旋转90度
+                                // alert(6)
                                 canvas.width = imgHeight;    
                                 canvas.height = imgWidth;    
                                 ctx.rotate(Math.PI / 2);
@@ -336,10 +295,12 @@ import EXIF from 'exif-js'
                                 ctx.drawImage(this, 0, -imgHeight, imgWidth, imgHeight);
                                 break;
                             case 3:     // 旋转180度
+                                // alert(3)
                                 ctx.rotate(Math.PI);    
                                 ctx.drawImage(this, -imgWidth, -imgHeight, imgWidth, imgHeight);
                                 break;
                             case 8:     // 旋转-90度
+                                // alert(8)
                                 canvas.width = imgHeight;    
                                 canvas.height = imgWidth;    
                                 ctx.rotate(3 * Math.PI / 2);    
