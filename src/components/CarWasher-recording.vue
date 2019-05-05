@@ -205,16 +205,22 @@ import EXIF from 'exif-js'
             // 选择图片
             onRead_before(file, detail) {
                 var this_ = this;
+                console.log(file)
+                console.log(EXIF)
                 this.isShow_loading_before = true;
                 var image = new Image,
-                    Orientation = null;
+                    Orientation;
                 image.src = file.content;
-                EXIF.getData(file, function() {  
-                    Orientation = EXIF.getTag(this, 'Orientation');
-                });
                 image.onload = function(){
+                    EXIF.getData(file, function() {  
+                        console.log(file)
+                        Orientation = EXIF.getTag(this, 'Orientation');
+                    });
+                        // alert('Orientation:'+ EXIF.getTag(this, 'Orientation'))
+                        // alert('Orientation:'+ Orientation)
                     var imgWidth = this.width,
                         imgHeight = this.height;
+                        // alert(imgWidth + '------------' + imgHeight)
                     if(imgWidth > imgHeight && imgWidth > 1500){
                         imgWidth = 1500;
                         imgHeight = Math.ceil(1500 * this.height / this.width);
@@ -222,6 +228,7 @@ import EXIF from 'exif-js'
                         imgWidth = Math.ceil(1500 * this.width / this.height);
                         imgHeight = 1500;
                     }
+                        // alert(imgWidth + '------------' + imgHeight)
                     var canvas =  document.createElement('canvas')
                     let ctx = canvas.getContext('2d') 
                     canvas.width = imgWidth;
@@ -229,6 +236,7 @@ import EXIF from 'exif-js'
                     if(Orientation && Orientation != 1){
                         switch(Orientation){
                             case 6:     // 旋转90度
+                                // alert(6)
                                 canvas.width = imgHeight;    
                                 canvas.height = imgWidth;    
                                 ctx.rotate(Math.PI / 2);
@@ -236,10 +244,12 @@ import EXIF from 'exif-js'
                                 ctx.drawImage(this, 0, -imgHeight, imgWidth, imgHeight);
                                 break;
                             case 3:     // 旋转180度
+                                // alert(3)
                                 ctx.rotate(Math.PI);    
                                 ctx.drawImage(this, -imgWidth, -imgHeight, imgWidth, imgHeight);
                                 break;
                             case 8:     // 旋转-90度
+                                // alert(8)
                                 canvas.width = imgHeight;    
                                 canvas.height = imgWidth;    
                                 ctx.rotate(3 * Math.PI / 2);    

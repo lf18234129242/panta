@@ -277,12 +277,14 @@ var villagee_ieku_json = {}
                 ],
                 first:'',           //车牌号首位汉字
                 numArr:[],          //车牌号
-                isShowLoading:true
+                isShowLoading:true,
+                openid:'',
             }
         },
         created(){
 
             let openid = localStorage.getItem('openid')
+            this.openid = openid;
             if(openid && openid !== 'undefined'){
                 //如果有 openid ，获取用户 姓名，手机号
                 this.isShowLoading = false;
@@ -310,7 +312,12 @@ var villagee_ieku_json = {}
                     this.disc_id = 0;
                     this.disabledBindCarInfo = true;
                 }
-            }
+            },
+            openid(){
+                if(this.openid && this.openid !== undefined &&village_list){
+                    this.getVillageList();
+                }
+            },
         },
         mounted(){
             // 获取免责声明
@@ -328,33 +335,36 @@ var villagee_ieku_json = {}
                 Toast(`获取免责声明失败，请您稍后再试！`)
             })
 
-            // 获取小区列表
-            this.axios.post(url.getVillageList,{
-                access_token:this.access_token
-            }).then(res => {
-                console.log(res)
-                if(res.data.code == 0){
-                    // 将后台传过来的 json 数组里面的 name 换成 text
-                    let columns_list;
-                    columns_list = JSON.parse(JSON.stringify(res.data.data.data).replace(/r_name/g,'name'))
-                    columns_list = JSON.parse(JSON.stringify(columns_list).replace(/title/g,'name'))
-                    
-                    for(let i=0;i<columns_list.length;i++){
-                        village_list.push(columns_list[i])
-                        villagee_ieku_json[village_list[i].name] = village_list[i].garage
-                    }
-                }else if(res.data.code == 1020009){
-                    this.getSelfInfo()
-                }
-            }).catch(err => {
-                console.log(err)
-            })
+            // this.getVillageList();
         },
         destroyed(){
             village_list = [];
             villagee_ieku_json = {}
         },
         methods: {
+            // 获取小区列表
+            getVillageList(){
+                this.axios.post(url.getVillageList,{
+                    access_token:this.access_token
+                }).then(res => {
+                    console.log(res)
+                    if(res.data.code == 0){
+                        // 将后台传过来的 json 数组里面的 name 换成 text
+                        let columns_list;
+                        columns_list = JSON.parse(JSON.stringify(res.data.data.data).replace(/r_name/g,'name'))
+                        columns_list = JSON.parse(JSON.stringify(columns_list).replace(/title/g,'name'))
+                        
+                        for(let i=0;i<columns_list.length;i++){
+                            village_list.push(columns_list[i])
+                            villagee_ieku_json[village_list[i].name] = village_list[i].garage
+                        }
+                    }else if(res.data.code == 1020009){
+                        this.getSelfInfo()
+                    }
+                }).catch(err => {
+                    console.log(err)
+                })
+            },
             // 免责声明
             statement(){
                 this.show_statement = true;
@@ -368,9 +378,6 @@ var villagee_ieku_json = {}
                 this.show_statement = false;
                 this.checked = false;
                 this.disc_id = 0;
-            },
-            onBlur(){
-                document.body.scrollTop = document.body.scrollTop;
             },
             // 当其他input 聚焦的时候，收起虚拟键盘
             hideKeyboard(){
@@ -411,6 +418,7 @@ var villagee_ieku_json = {}
                         localStorage.setItem('id',res.data.data.id)
                         localStorage.setItem('wx_headimgurl',res.data.data.wx_headimgurl)
                         localStorage.setItem('username',res.data.data.username)
+                        this.getVillageList();
                     }
                 }).catch(err => {
                     console.log(err)
@@ -512,7 +520,11 @@ var villagee_ieku_json = {}
                 this.showKeyBoard = false;
             },
             // 选择小区
+            onBlur(){
+                document.body.scrollTop = document.body.scrollTop;
+            },
             checkVillage(){
+                document.body.scrollTop = document.body.scrollTop;
                 this.show = true;
                 document.activeElement.blur();
             },

@@ -26,6 +26,14 @@
                         <van-radio :name="index" :disabled="item.rest_cnt == 0 || item.over_self_limits == 0" @click="checkRadio(index)"></van-radio>
                     </li>
                 </div>
+                <div
+                    class="section_"
+                    v-for="(item_,index) in item.incm_list"
+                    :key="index"
+                >
+                    <p><span>✔</span>{{item_.title}}</p>
+                    <p>{{item_.content}}</p>
+                </div>
                 <div class="bottom">
                     {{item.package_explain}}<br>
                     到期时间：{{item.over_time}}
@@ -223,15 +231,32 @@ import wx from 'weixin-js-sdk'
                 p{
                     font-size: 1.667rem;
                     color: #111111;
-
                 }
             }
             .radio{
                 margin-top: 1.2rem;
             }
         }
+        .section_{
+            width: 15.133rem;
+            border-bottom: 1px dashed #CFCFCF;
+            padding: 0.8rem 0 0.8rem 3.533rem;
+            line-height: 1.8rem;
+            p:nth-child(1){
+                font-size: 16px;
+                color: #111111;
+                span{
+                    display: inline-block;
+                    margin-left: -2rem;
+                    margin-right: 1rem;
+                }
+            }
+            p:nth-child(2){
+                font-size: 12px;
+                color: #888;
+            }
+        }
         .bottom{
-            // height: 1.2rem;
             font-size: .867rem;
             color: #888888;
             margin-top: 1rem;

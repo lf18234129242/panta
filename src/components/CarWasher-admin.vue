@@ -42,6 +42,10 @@
                                     <h4>{{item_.over_time | over_time}}</h4>
                                 </li>
                             </div>
+                            <div class="service" v-for="(item__,index) in item_.incm" :key="index">
+                                <h2>今日服务:</h2>
+                                <li>{{item__.tag_show}}</li>
+                            </div>
                         </shadow-box>
                     </router-link>
                 </div>
@@ -154,7 +158,7 @@ import mdFive from '@/md5.js'
             height: 4.5rem;
             padding: 1rem 0  1.933rem;
             box-sizing: border-box;
-            border-bottom: 1px solid #979797;
+            border-bottom: 1px solid #999;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -183,7 +187,6 @@ import mdFive from '@/md5.js'
         }
         .bottom{
             width: 100%;
-            // height: 3.867rem;
             display: flex;
             flex-wrap: wrap;
             align-items: center;
@@ -213,6 +216,23 @@ import mdFive from '@/md5.js'
                     height: 1.333rem;
                     line-height: 1.333rem;
                 }
+            }
+        }
+        .service{
+            width: 100%;
+            height: 1.5rem;
+            border-top: 1px solid #999;
+            display: flex;
+            padding: 0.5rem 0;
+            h2{
+                font-size: 14px;
+                color: #323643;
+            }
+            li{
+                background: url(./../assets/img/fuwu.png) no-repeat left center;
+                background-size: 1rem 1rem;
+                padding-left: 1.2rem;
+                margin-left: 0.5rem;
             }
         }
     }

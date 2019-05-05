@@ -105,35 +105,39 @@ export default {
       id:'',    //车辆 id
       isShowLoading:true,
       isLoading:false,      //下拉刷新
+      openid:'',
     }
   },
   created(){
     let openid = localStorage.getItem('openid')
-    // alert('created--110')
+    this.openid = openid;
     if(openid && openid !== 'undefined'){
-    // alert('created--112')
       //如果有 openid ，获取用户 姓名，手机号
       this.isShowLoading = false;
       this.getClientInfo()
       return;
     }else{
-    // alert('created--118')
       localStorage.setItem('openid',this.$route.query.openid)
       let openid = localStorage.getItem('openid')
       if(openid && openid !== 'undefined'){
-    // alert('created--122')
       this.isShowLoading = false;
         //如果有 openid ，获取用户 姓名，手机号
         this.getClientInfo()
       }else{
-    // alert('created--127')
         // 授权第一步
         this.getSelfInfo()
       }
     } 
   },
+  watch:{
+    openid(){
+      if(this.openid && this.openid !== undefined && this.carsInfo){
+        this.getCarList();
+      }
+    },
+  },
   mounted(){
-    this.getCarList();
+    // this.getCarList();
   },
   methods: {
     // 下拉刷新
@@ -170,14 +174,12 @@ export default {
     },
     //获取用户 姓名、手机号
     getClientInfo(){
-    // alert('getClientInfo--164')
       let openid = localStorage.getItem('openid')
       this.axios.post(url.getClientInfo,{
         access_token:this.access_token,
         openid:openid
       }).then(res => {
         console.log(res)
-    // alert('getClientInfo--171')
         this.car_owner = res.data.data.username
         localStorage.setItem('id',res.data.data.id)
         localStorage.setItem('wx_headimgurl',res.data.data.wx_headimgurl)
@@ -188,33 +190,30 @@ export default {
     },
     //  getSelfInfo   授权第一步
     getSelfInfo(){
-    // alert('getSelfInfo--182')
         this.axios.post(url.getSelfInfo,{
             access_token:this.access_token
         }).then(res=> {
             console.log(res)
             // 如果用户未登录   跳转到后台返回的链接
             if(res.data.code == 1020009){
-    // alert('getSelfInfo--189')
                 let isError = this.$route.query.status
                 // 如果 url 里面没有 isError 参数，就跳转请求连接
                 if(isError==undefined || !isError){
-    // alert('getSelfInfo--193')
                     window.location.href = res.data.data.oauth_url;
                     // 如果请求返回 ERROR ，则主动请求授权
                 }else if(isError == 'ERROR'){
-    // alert('getSelfInfo--197')
                     // 非静默授权模式
                     this.snsapi_userinfo()
+                    this.getCarList()
                 }else if(isError == 'SUCCESS'){
-    // alert('getSelfInfo--201')
                     // 静默授权模式
                     this.snsapi_base()
+                    this.getCarList()
                 }
                 return false;
             // 静默授权，获取微信名 头像 openid id
             }else if(res.data.code == 0){
-    // alert('getSelfInfo--208')
+                this.getCarList()
                 this.isShowLoading = false;
                 this.car_owner = res.data.data.username
                 localStorage.setItem('openid',res.data.data.openid)
@@ -229,7 +228,6 @@ export default {
     },
     // 静默授权模式
     snsapi_base(){
-    // alert('snsapi_base--223')
         this.axios.post(url.getOauthRedirect,{
             access_token:this.access_token,
             redirect_uri:`http://www.ichevip.com/view/addCarInfo`,
@@ -237,7 +235,6 @@ export default {
         }).then(res => {
             console.log(res)
             if(res.data.code == 0){
-    // alert('snsapi_base--231')
                 window.location.href = res.data.data.oauth_url
             }
         }).catch(err => {
@@ -246,7 +243,6 @@ export default {
     },
     // 非静默授权模式
     snsapi_userinfo(){
-    // alert('snsapi_userinfo--240')
         this.axios.post(url.getOauthRedirect,{
             access_token:this.access_token,
             redirect_uri:`http://www.ichevip.com/view/addCarInfo`,
@@ -254,7 +250,6 @@ export default {
         }).then(res => {
             console.log(res)
             if(res.data.code == 0){
-    // alert('snsapi_userinfo--248')
                 window.location.href = res.data.data.oauth_url
             }
         }).catch(err => {
