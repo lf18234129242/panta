@@ -61,10 +61,11 @@ import wx from 'weixin-js-sdk'
                 headerImg: require('./../assets/img/car-green.png'),
                 radio: 0,
                 packageList:[],
+                incm_ids:[],    //增值服务的id
                 access_token : this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key),
                 car_id:'',          //用户选择的车辆id号
                 order_id:'',     //订单 id
-                wechatPay_button:false
+                wechatPay_button:false,
             }
         },
         mounted(){
@@ -101,16 +102,24 @@ import wx from 'weixin-js-sdk'
             // 下单
             wechatPay(){
                 this.wechatPay_button = true;
+                // let ids = ;
+                if(this.packageList[this.radio].incm_ids){
+                    this.incm_ids.push(this.packageList[this.radio].incm_list[0].id)
+                }else{
+                    this.incm_ids.push('')
+                }
                 this.axios.post(url.createOrder,{
                     access_token:this.access_token,
                     car_id:this.car_id,
                     package_id:this.packageList[this.radio].id,         //用户选择的套餐id
                     unit_price:this.packageList[this.radio].price,      //套餐单价
                     total_price:this.packageList[this.radio].price,     //套餐总价
+                    incm_ids:this.incm_ids      //选择的增值服务
                 }).then(res => {
                     console.log(res)
                     // 如果下单成功，进入微信支付
                     if(res.data.code == 0){
+                        this.incm_ids = []      //清空选择的增值服务
                         this.order_id = res.data.data.order_id;
                         this.axios.post(url.getWxVoucher,{
                             access_token:this.access_token,

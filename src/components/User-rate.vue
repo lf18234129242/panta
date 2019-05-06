@@ -66,11 +66,13 @@ import { Toast, ImagePreview} from 'vant'
                 access_token : this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key),
                 instance_before:'',
                 instance_after:'',
-                isShowLoading:true
+                isShowLoading:true,
+                openid:'',
             }
         },
         created(){
             let openid = localStorage.getItem('openid')
+            this.openid = openid;
             if(openid && openid !== 'undefined'){
                 //如果有 openid ，获取用户 姓名，手机号
                 this.isShowLoading = false;
@@ -91,29 +93,12 @@ import { Toast, ImagePreview} from 'vant'
         },
         mounted(){
             this.cr_id = this.$route.query.cr_id;
-            this.axios.post(url.getClearRecordDetail,{
-                access_token:this.access_token,
-                cr_id:this.cr_id
-            }).then(res => {
-                console.log(res)
-                if(res.data.code == 0){
-                    if(res.data.data.star_level){
-                        this.is_show_rate = false;
-                    }else{
-                        this.is_show_rate = true;
-                    }
-                    this.nickname = res.data.data.nickname
-                    this.r_name = res.data.data.r_name
-                    this.warsher_before_img = res.data.data.before_img.img_url
-                    this.warsher_after_img = res.data.data.after_img.img_url
-                    this.special_cases = res.data.data.special_cases
-                }else{
-                    this.$router.replace('/')
-                    this.go(-1)
-                }
-            }).catch(err => {
-                console.log(err)
-            })
+            
+        },
+        watch:{
+            openid(){
+                this.getClearRecordDetail()
+            }
         },
         destroyed(){
             if(this.active == 0){
@@ -123,6 +108,32 @@ import { Toast, ImagePreview} from 'vant'
             }
         },
         methods: {
+            // 获取洗车记录图片
+            getClearRecordDetail(){
+                this.axios.post(url.getClearRecordDetail,{
+                    access_token:this.access_token,
+                    cr_id:this.cr_id
+                }).then(res => {
+                    console.log(res)
+                    if(res.data.code == 0){
+                        if(res.data.data.star_level){
+                            this.is_show_rate = false;
+                        }else{
+                            this.is_show_rate = true;
+                        }
+                        this.nickname = res.data.data.nickname
+                        this.r_name = res.data.data.r_name
+                        this.warsher_before_img = res.data.data.before_img.img_url
+                        this.warsher_after_img = res.data.data.after_img.img_url
+                        this.special_cases = res.data.data.special_cases
+                    }else{
+                        this.$router.replace('/')
+                        this.go(-1)
+                    }
+                }).catch(err => {
+                    console.log(err)
+                })
+            },
             //查看图片
             show_before_img(){
                 this.active = 0;
@@ -189,6 +200,7 @@ import { Toast, ImagePreview} from 'vant'
                         localStorage.setItem('id',res.data.data.id)
                         localStorage.setItem('wx_headimgurl',res.data.data.wx_headimgurl)
                         localStorage.setItem('username',res.data.data.username)
+                        this.getClearRecordDetail()
                     }
                 }).catch(err => {
                     console.log(err)

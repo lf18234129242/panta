@@ -49,6 +49,7 @@
                 label="车位号码"
                 left-icon="flag-o"
                 :disabled="parkingIsDisabled"
+                @keyup="parking=parking.replace(/[^\w\.\/]/ig,'')"
                 @focus="hideKeyboard"
                 @blur="onBlur"
             />
@@ -456,6 +457,7 @@ var villagee_ieku_json = {}
             },
             // 绑定车牌号
             submitAddCarInfo(){
+                // let rule = /^\w+$/;
                 this.plate_number = this.first + this.numArr.join('')
                 if(this.plate_number.length < 7 || this.plate_number.length > 8){
                     Toast(`请输入正确的车牌号码！`)
