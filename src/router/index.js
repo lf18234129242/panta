@@ -143,5 +143,16 @@ export default new Router({
         scrollToTop:true,
       }
     },
+    {
+      path: '/calendar',
+      name: 'Calendar',
+      component: loadView('Calendar'),
+      meta:{
+        index:3,
+        auth:true,
+        title:'预约服务',
+        scrollToTop:true,
+      }
+    },
   ]
 })

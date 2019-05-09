@@ -10,9 +10,11 @@
   ],
   "plugins": ["transform-vue-jsx", "transform-runtime",
     ["import", {
-      "libraryName": "vant",
-      "libraryDirectory": "es",
-      "style": true
+      "libraryName": ["vant","iview"],
+      "libraryDirectory": ["es","src/components"],
+      "style": true,
+      // "libraryName": "iview",
+      // "libraryDirectory": "src/components"
     }]
   ],
 }

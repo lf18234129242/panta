@@ -11,7 +11,8 @@ import ShadowBox from './component/ShadowBox.vue'
 import PageHeader from './component/PageHeader.vue'
 import {Button, Field, Cell, CellGroup, Popup, Picker, RadioGroup, Radio, Toast, Dialog, PasswordInput, Icon, Tab, Tabs, Uploader, NavBar, Rate, Loading, PullRefresh, Checkbox, CheckboxGroup} from 'vant'
 
-
+import {DatePicker} from 'iview';
+Vue.component('DatePicker', DatePicker);
 // 获取url里的参数值
 import geturlpara from './geturlpara.js'
 
